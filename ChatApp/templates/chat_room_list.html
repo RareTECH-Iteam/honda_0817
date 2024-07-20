@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>チャットルーム一覧</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .chat-room-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .chat-room-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chat-room-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .chat-room-list img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .chat-room-list a {
+            text-decoration: none;
+            color: black;
+            font-size: 18px;
+            flex-grow: 1;
+        }
+
+        .chat-room-list a:hover {
+            text-decoration: underline;
+        }
+
+        .user-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: gray;
+        }
+
+        .chat-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: black;
+            font-size: 18px;
+        }
+
+        .chat-link:hover {
+            text-decoration: underline;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 10px;
+            background-color: lightblue; /* すべてのアイコンを水色に設定 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 onclick="location.href='{{ url_for('index') }}'">チャット</h1>
+            <div class="user-icon">自分のアイコン</div>
+        </header>
+        <h2>チャットルーム一覧</h2>
+        <ul class="chat-room-list">
+            <li>
+                <a href="{{ url_for('chat_room', room_name='A') }}" class="chat-link">
+                    <div class="icon">A</div> メッセージ？
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('chat_room', room_name='B') }}" class="chat-link">
+                    <div class="icon">B</div> メッセージ？
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('chat_room', room_name='C') }}" class="chat-link">
+                    <div class="icon">C</div> チャット？
+                </a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

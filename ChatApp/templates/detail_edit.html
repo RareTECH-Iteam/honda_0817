@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Edit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .icon {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .icon img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            padding: 5px;
+            width: 200px;
+            font-size: 16px;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="username">ユーザ名</label>
+                <input type="text" id="username" name="username" value="">
+            </div>
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" name="email" value="">
+            </div>
+            <div class="form-group">
+                <label for="address">居住地</label>
+                <input type="text" id="address" name="address" value="">
+            </div>
+            <div class="form-group">
+                <label for="greeting">あいさつ</label>
+                <input type="text" id="greeting" name="greeting" value="">
+            </div>
+            <div class="buttons">
+                <a class="button" href="{{ url_for('index') }}">キャンセル</a>
+                <button type="submit" class="button">保存</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

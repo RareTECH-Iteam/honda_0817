@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>チャットルーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .chat-messages {
+            height: 200px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        .chat-message {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .chat-message .icon {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .chat-message .message-content {
+            background: #f1f1f1;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .chat-input {
+            display: flex;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+        .chat-input button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-left: 0;
+            background: #007bff;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+        .exit-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            background: #ff0000;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .exit-button:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <span>チャット</span>
+            <span>自分のアイコン</span>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-message">
+                <div class="icon">A</div>
+                <div class="message-content">メッセージA</div>
+            </div>
+            <div class="chat-message">
+                <div class="icon">A</div>
+                <div class="message-content">メッセージB</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="メッセの入力">
+            <button type="button" onclick="sendMessage()">送信</button>
+        </div>
+    </div>
+    <form action="{{ url_for('chat_room_list') }}">
+        <button type="submit" class="exit-button">退出</button>
+    </form>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageText = input.value.trim();
+
+            if (messageText) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message');
+
+                const iconElement = document.createElement('div');
+                iconElement.classList.add('icon');
+                iconElement.textContent = 'A'; // アイコンの文字（仮）
+
+                const messageContentElement = document.createElement('div');
+                messageContentElement.classList.add('message-content');
+                messageContentElement.textContent = messageText;
+
+                messageElement.appendChild(iconElement);
+                messageElement.appendChild(messageContentElement);
+                messagesContainer.appendChild(messageElement);
+
+                input.value = '';
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
