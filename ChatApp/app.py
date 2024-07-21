@@ -88,12 +88,10 @@ def index():
 # ホームの「/」の中の「detail」URLのエンドポイント
 @app.route('/detail')
 def detail():
-    
     return render_template('detail.html')
 
 @app.route('/detail_edit')
 def detail_edit():
-    
     return render_template('detail_edit.html')
 
 # ホームの「/」の中の「chat_room_list」URLのエンドポイント
