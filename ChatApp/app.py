@@ -54,7 +54,7 @@ def login():
     return render_template('registration/login.html')
 
 # ログイン処理
-@app.route('/logout', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def userLogin():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -81,9 +81,11 @@ def index():
     if uid is None:
         return redirect('/login')
     else:
-        channels = dbConnect.getChannelAll()
+        channels = dbConnect.getChatAll()
         channels.reverse()
     return render_template('index.html', channels=channels, uid=uid)
+
+
 
 # ホームの「/」の中の「detail」URLのエンドポイント
 @app.route('/detail')
