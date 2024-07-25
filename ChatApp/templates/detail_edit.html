@@ -3,82 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Edit</title>
+    <title>ユーザー情報編集</title>
     <style>
+        /* 基本のリセット */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 全体のスタイル */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
         }
+
+        /* コンテナのスタイル */
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .icon {
-            display: flex;
-            align-items: center;
+
+        /* ヘッダーのスタイル */
+        h1 {
+            text-align: center;
+            color: #007bff;
             margin-bottom: 20px;
         }
-        .icon img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
+
+        /* フォームのスタイル */
+        form div {
+            margin-bottom: 15px;
         }
-        .form-group {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .form-group label {
+
+        label {
+            display: block;
+            font-weight: bold;
             margin-bottom: 5px;
         }
-        .form-group input {
-            padding: 5px;
-            width: 200px;
-            font-size: 16px;
+
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        .buttons {
-            display: flex;
-            gap: 10px;
+
+        textarea {
+            resize: vertical;
         }
-        .button {
-            padding: 10px 20px;
-            background-color: #f0f0f0;
+
+        /* ボタンのスタイル */
+        button {
+            background-color: #007bff;
+            color: #fff;
             border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
         }
-        .button:hover {
-            background-color: #ddd;
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* キャンセルリンクのスタイル */
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <form>
-            <div class="form-group">
-                <label for="username">ユーザ名</label>
-                <input type="text" id="username" name="username" value="">
+        <h1>ユーザー情報編集</h1>
+        <form action="{{ url_for('detail_edit') }}" method="post">
+            <div>
+                <label for="username">ユーザー名:</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
             </div>
-            <div class="form-group">
-                <label for="email">メールアドレス</label>
-                <input type="email" id="email" name="email" value="">
+            <div>
+                <label for="email">メールアドレス:</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
             </div>
-            <div class="form-group">
-                <label for="address">居住地</label>
-                <input type="text" id="address" name="address" value="">
+            <div>
+                <label for="address">居住地:</label>
+                <select id="address" name="address" required>
+                    <option value="" disabled selected>選択してください</option>
+                    <option value="北海道" {% if user.address == '北海道' %}selected{% endif %}>北海道</option>
+                    <option value="青森県" {% if user.address == '青森県' %}selected{% endif %}>青森県</option>
+                    <option value="岩手県" {% if user.address == '岩手県' %}selected{% endif %}>岩手県</option>
+                    <option value="宮城県" {% if user.address == '宮城県' %}selected{% endif %}>宮城県</option>
+                    <option value="秋田県" {% if user.address == '秋田県' %}selected{% endif %}>秋田県</option>
+                    <option value="山形県" {% if user.address == '山形県' %}selected{% endif %}>山形県</option>
+                    <option value="福島県" {% if user.address == '福島県' %}selected{% endif %}>福島県</option>
+                    <option value="茨城県" {% if user.address == '茨城県' %}selected{% endif %}>茨城県</option>
+                    <option value="栃木県" {% if user.address == '栃木県' %}selected{% endif %}>栃木県</option>
+                    <option value="群馬県" {% if user.address == '群馬県' %}selected{% endif %}>群馬県</option>
+                    <option value="埼玉県" {% if user.address == '埼玉県' %}selected{% endif %}>埼玉県</option>
+                    <option value="千葉県" {% if user.address == '千葉県' %}selected{% endif %}>千葉県</option>
+                    <option value="東京都" {% if user.address == '東京都' %}selected{% endif %}>東京都</option>
+                    <option value="神奈川県" {% if user.address == '神奈川県' %}selected{% endif %}>神奈川県</option>
+                    <option value="新潟県" {% if user.address == '新潟県' %}selected{% endif %}>新潟県</option>
+                    <option value="富山県" {% if user.address == '富山県' %}selected{% endif %}>富山県</option>
+                    <option value="石川県" {% if user.address == '石川県' %}selected{% endif %}>石川県</option>
+                    <option value="福井県" {% if user.address == '福井県' %}selected{% endif %}>福井県</option>
+                    <option value="山梨県" {% if user.address == '山梨県' %}selected{% endif %}>山梨県</option>
+                    <option value="長野県" {% if user.address == '長野県' %}selected{% endif %}>長野県</option>
+                    <option value="岐阜県" {% if user.address == '岐阜県' %}selected{% endif %}>岐阜県</option>
+                    <option value="静岡県" {% if user.address == '静岡県' %}selected{% endif %}>静岡県</option>
+                    <option value="愛知県" {% if user.address == '愛知県' %}selected{% endif %}>愛知県</option>
+                    <option value="三重県" {% if user.address == '三重県' %}selected{% endif %}>三重県</option>
+                    <option value="滋賀県" {% if user.address == '滋賀県' %}selected{% endif %}>滋賀県</option>
+                    <option value="京都府" {% if user.address == '京都府' %}selected{% endif %}>京都府</option>
+                    <option value="大阪府" {% if user.address == '大阪府' %}selected{% endif %}>大阪府</option>
+                    <option value="兵庫県" {% if user.address == '兵庫県' %}selected{% endif %}>兵庫県</option>
+                    <option value="奈良県" {% if user.address == '奈良県' %}selected{% endif %}>奈良県</option>
+                    <option value="和歌山県" {% if user.address == '和歌山県' %}selected{% endif %}>和歌山県</option>
+                    <option value="鳥取県" {% if user.address == '鳥取県' %}selected{% endif %}>鳥取県</option>
+                    <option value="島根県" {% if user.address == '島根県' %}selected{% endif %}>島根県</option>
+                    <option value="岡山県" {% if user.address == '岡山県' %}selected{% endif %}>岡山県</option>
+                    <option value="広島県" {% if user.address == '広島県' %}selected{% endif %}>広島県</option>
+                    <option value="山口県" {% if user.address == '山口県' %}selected{% endif %}>山口県</option>
+                    <option value="徳島県" {% if user.address == '徳島県' %}selected{% endif %}>徳島県</option>
+                    <option value="香川県" {% if user.address == '香川県' %}selected{% endif %}>香川県</option>
+                    <option value="愛媛県" {% if user.address == '愛媛県' %}selected{% endif %}>愛媛県</option>
+                    <option value="高知県" {% if user.address == '高知県' %}selected{% endif %}>高知県</option>
+                    <option value="福岡県" {% if user.address == '福岡県' %}selected{% endif %}>福岡県</option>
+                    <option value="佐賀県" {% if user.address == '佐賀県' %}selected{% endif %}>佐賀県</option>
+                    <option value="長崎県" {% if user.address == '長崎県' %}selected{% endif %}>長崎県</option>
+                    <option value="熊本県" {% if user.address == '熊本県' %}selected{% endif %}>熊本県</option>
+                    <option value="大分県" {% if user.address == '大分県' %}selected{% endif %}>大分県</option>
+                    <option value="宮崎県" {% if user.address == '宮崎県' %}selected{% endif %}>宮崎県</option>
+                    <option value="鹿児島県" {% if user.address == '鹿児島県' %}selected{% endif %}>鹿児島県</option>
+                    <option value="沖縄県" {% if user.address == '沖縄県' %}selected{% endif %}>沖縄県</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label for="greeting">あいさつ</label>
-                <input type="text" id="greeting" name="greeting" value="">
+            <div>
+                <label for="greeting">あいさつ:</label>
+                <textarea id="greeting" name="greeting" rows="4" required>{{ user.greeting }}</textarea>
             </div>
-            <div class="buttons">
-                <a class="button" href="{{ url_for('index') }}">キャンセル</a>
-                <button type="submit" class="button">保存</button>
+            <div>
+                <button type="submit">更新</button>
             </div>
         </form>
+        <div>
+            <a href="{{ url_for('detail') }}">キャンセル</a>
+        </div>
     </div>
 </body>
 </html>

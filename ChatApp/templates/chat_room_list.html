@@ -35,6 +35,8 @@
         header h1 {
             margin: 0;
             font-size: 24px;
+            color: blue; /* ヘッダーのテキスト色を青に設定 */
+            cursor: pointer;
         }
 
         .chat-room-list {
@@ -61,31 +63,14 @@
 
         .chat-room-list a {
             text-decoration: none;
-            color: black;
+            color: blue; /* リンクの色を青に設定 */
             font-size: 18px;
             flex-grow: 1;
+            display: flex;
+            align-items: center;
         }
 
         .chat-room-list a:hover {
-            text-decoration: underline;
-        }
-
-        .user-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: gray;
-        }
-
-        .chat-link {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: black;
-            font-size: 18px;
-        }
-
-        .chat-link:hover {
             text-decoration: underline;
         }
 
@@ -96,36 +81,32 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: white; /* アイコンの文字色を白に設定 */
             font-size: 20px;
             margin-right: 10px;
-            background-color: lightblue; /* すべてのアイコンを水色に設定 */
+            background-color: #007BFF; /* すべてのアイコンを青色に設定 */
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1 onclick="location.href='{{ url_for('index') }}'">チャット</h1>
-            <div class="user-icon">自分のアイコン</div>
+            <h1 onclick="location.href='/'">チャット</h1>
+            <div class="user-icon">アイコン</div>
         </header>
         <h2>チャットルーム一覧</h2>
         <ul class="chat-room-list">
-            <li>
-                <a href="{{ url_for('chat_room', room_name='A') }}" class="chat-link">
-                    <div class="icon">A</div> メッセージ？
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('chat_room', room_name='B') }}" class="chat-link">
-                    <div class="icon">B</div> メッセージ？
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('chat_room', room_name='C') }}" class="chat-link">
-                    <div class="icon">C</div> チャット？
-                </a>
-            </li>
+            {% if chat_rooms %}
+                {% for room in chat_rooms %}
+                <li>
+                    <a href="{{ url_for('chat_room', room_id=room['id']) }}" class="chat-link">
+                        <div class="icon"></div> {{ room['name'] }}
+                    </a>
+                </li>
+                {% endfor %}
+            {% else %}
+                <li>チャットルームがありません。</li>
+            {% endif %}
         </ul>
     </div>
 </body>

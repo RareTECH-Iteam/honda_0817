@@ -3,61 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail</title>
+    <title>詳細</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
         }
-        .icon {
-            display: flex;
-            align-items: center;
+        h1 {
             margin-bottom: 20px;
-        }
-        .icon img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
+            color: #5d5d5d;
         }
         .info {
             margin-bottom: 20px;
+            text-align: left;
         }
         .info div {
             margin-bottom: 10px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        .info strong {
+            display: inline-block;
+            width: 80px;
         }
         .buttons {
             display: flex;
-            gap: 10px;
+            justify-content: space-around;
         }
-        .button {
-            padding: 10px 20px;
-            background-color: #f0f0f0;
+        .buttons button {
+            background: #007bff;
             border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            transition: background 0.3s;
         }
-        .button:hover {
-            background-color: #ddd;
+        .buttons button:hover {
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>ユーザ情報</h1>
         <div class="info">
-            <div>ユーザ名:ttさん</div>
-            <div>メールアドレス:tt@mail.com</div>
-            <div>居住地:東京</div>
-            <div>あいさつ:tt</div>
+            <div><strong>ユーザー名:</strong> {{ user.username }}</div>
+            <div><strong>メールアドレス:</strong> {{ user.email }}</div>
+            <div><strong>居住地:</strong> {{ user.address }}</div>
+            <div><strong>あいさつ:</strong> {{ user.greeting }}</div>
         </div>
         <div class="buttons">
-            <a class="button" href="{{ url_for('index') }}">ホーム</a>
-            <a class="button" href="{{ url_for('detail_edit') }}">変更</a>
+            <button onclick="location.href='{{ url_for('index') }}'">戻る</button>
+            <button onclick="location.href='{{ url_for('detail_edit') }}'">編集</button>
         </div>
     </div>
 </body>

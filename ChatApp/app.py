@@ -1,15 +1,15 @@
-from flask import Flask, request, redirect, render_template, session, flash, abort
+from flask import Flask, request, redirect, render_template, session, flash, abort, jsonify
 from datetime import timedelta
 import hashlib
 import uuid
 import re
-
+# from flask_wtf import CSRFProtect
 from models import dbConnect
 
 app = Flask(__name__)
 app.secret_key = uuid.uuid4().hex
 app.permanent_session_lifetime = timedelta(days=30)
-
+# csrf = CSRFProtect(app)  # CSRFProtect を初期化して Flask アプリケーションに登録
 
 # サインアップページの表示
 @app.route('/signup')
@@ -36,7 +36,8 @@ def userSignup():
         flash('正しいメールアドレスの形式ではありません')
     else:
         uid = uuid.uuid4()
-        password = hashlib.sha256(password1.encode('utf-8')).hexdigest()
+        # password = hashlib.sha256(password1.encode('utf-8')).hexdigest()
+        password = password1  # ハッシュ化しない
         DBuser = dbConnect.getUser(email)
 
         if DBuser != None:
@@ -66,9 +67,11 @@ def userLogin():
         if user is None:
             flash('このユーザーは存在しません')
         else:
-            hashPassword = hashlib.sha256(password.encode('utf-8')).hexdigest()
-            if hashPassword != user["password"]:
+            if password != user["password"]:  # ハッシュ化せずに平文で比較
                 flash('パスワードが間違っています！')
+            # hashPassword = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            # if hashPassword != user["password"]:
+            #     flash('パスワードが間違っています！')
             else:
                 session['uid'] = user["uid"]
                 return redirect('/')
@@ -82,29 +85,125 @@ def index():
         return redirect('/login')
     else:
         channels = dbConnect.getChatAll()
-        channels.reverse()
+        channels = channels[::-1]  # スライスを使ってタプルを逆順にする
     return render_template('index.html', channels=channels, uid=uid)
-
-
 
 # ホームの「/」の中の「detail」URLのエンドポイント
 @app.route('/detail')
 def detail():
-    return render_template('detail.html')
+    uid = session.get("uid")
+    if uid is None:
+        return redirect('/login')
+    else:
+        user = dbConnect.getUserByUid(uid)
+    return render_template('detail.html', user=user)
 
-@app.route('/detail_edit')
+# ユーザ情報の更新
+@app.route('/detail_edit', methods=['GET', 'POST'])
 def detail_edit():
-    return render_template('detail_edit.html')
+    uid = session.get("uid")
+    if uid is None:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        # POSTリクエストの場合、フォームからデータを取得して更新処理を行う
+        username = request.form.get('username')
+        email = request.form.get('email')
+        address = request.form.get('address')
+        greeting = request.form.get('greeting')
+
+        # データベースを更新
+        dbConnect.updateUser(uid, username, email, address, greeting)
+        
+        # 更新後の詳細ページにリダイレクト
+        return redirect('/detail')
+    else:
+        # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
+        user = dbConnect.getUserByUid(uid)
+        return render_template('detail_edit.html', user=user)
 
 # ホームの「/」の中の「chat_room_list」URLのエンドポイント
 @app.route('/chat_room_list')
 def chat_room_list():
-    return render_template('chat_room_list.html')
+    uid = session.get("uid")
+    if uid is None:
+        return redirect('/login')
+    chat_rooms = dbConnect.getChatRoomList(uid)
+    return render_template('chat_room_list.html', chat_rooms=chat_rooms)
+
+
+# チャットルームの表示とメッセージ送信のエンドポイント
+# @app.route('/chat_room', methods=['GET', 'POST'])
+# def chat_room():
+#     uid = session.get("uid")
+#     if uid is None:
+#         return redirect('/login')
+    
+#     if request.method == 'POST':
+#         data = request.get_json()
+#         chat_id = data.get('chat_id')
+#         message = data.get('message')
+        
+#         if chat_id and message:
+#             if chat_id.isdigit():  # chat_id が数字かどうかを確認
+#                 dbConnect.addMessage(uid, int(chat_id), message)
+#                 return jsonify(success=True)
+#             else:
+#                 return jsonify(success=False, error="Invalid chat_id")
+#         else:
+#             return jsonify(success=False, error="Invalid data")
+    
+#     # GETリクエストの場合、チャットルームを表示
+#     chat_id = request.args.get('chat_id')
+    
+#     if chat_id:
+#         if chat_id.isdigit():  # chat_id が数字かどうかを確認
+#             messages = dbConnect.getMessagesByChatRoom(uid, int(chat_id))
+#             return jsonify(success=True, messages=messages)
+#         else:
+#             return jsonify(success=False, error="Invalid chat_id")
+    
+#     # チャットIDが指定されていない場合、チャットルームの一覧を表示
+#     chats = dbConnect.getChatRoomList(uid)
+#     return render_template('chat_room.html', chats=chats, chat_id=chat_id)
 
 @app.route('/chat_room')
 def chat_room():
-    return render_template('chat_room.html')
+    uid = session.get("uid")
+    if uid is None:
+        return redirect('/login')
+    
+    chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
+    if chat_id:
+        # チャットIDが指定されている場合、メッセージを取得
+        messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
+        return render_template('chat_room.html', chat_id=chat_id, messages=messages)
+    
+    # チャットIDが指定されていない場合、チャットルームの一覧を表示
+    chats = dbConnect.getChatRoomList(uid)
+    return render_template('chat_room.html', chats=chats)
 
+# @app.route('/fetch_messages')
+# def fetch_messages():
+#     chat_id = request.args.get('chat_id')
+#     uid = session.get("uid")
+#     if uid is None:
+#         return redirect('/login')
+    
+#     if chat_id and chat_id.isdigit():
+#         messages = dbConnect.getMessagesByChatRoom(uid, int(chat_id))
+#         return jsonify(success=True, messages=messages)
+#     else:
+#         return jsonify(success=False, error="Invalid chat_id")
+
+@app.route('/fetch_messages')
+def fetch_messages():
+    chat_id = request.args.get('chat_id')
+    if chat_id:
+        messages = dbConnect.getMessagesByChatRoom(chat_id)
+        return jsonify({'success': True, 'messages': messages})
+    else:
+        return jsonify({'success': False, 'error': 'チャットIDが指定されていません'})
 
 # 「matching」URLのエンドポイント
 @app.route('/matching')

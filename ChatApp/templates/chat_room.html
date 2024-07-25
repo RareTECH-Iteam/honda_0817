@@ -8,10 +8,11 @@
             font-family: Arial, sans-serif;
         }
         .chat-container {
-            width: 300px;
+            width: 80%;
+            margin: 0 auto;
             border: 1px solid #ccc;
             padding: 10px;
-            margin: 0 auto;
+            background-color: #fff;
             position: relative;
         }
         .chat-header {
@@ -23,8 +24,8 @@
             margin-bottom: 10px;
         }
         .chat-messages {
-            height: 200px;
-            overflow-y: scroll;
+            height: 300px;
+            overflow-y: auto;
             margin-bottom: 10px;
         }
         .chat-message {
@@ -89,21 +90,14 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <span>チャット</span>
+            <span>チャットルーム</span>
             <span>自分のアイコン</span>
         </div>
         <div class="chat-messages" id="chat-messages">
-            <div class="chat-message">
-                <div class="icon">A</div>
-                <div class="message-content">メッセージA</div>
-            </div>
-            <div class="chat-message">
-                <div class="icon">A</div>
-                <div class="message-content">メッセージB</div>
-            </div>
+            <!-- ここにメッセージが追加される -->
         </div>
         <div class="chat-input">
-            <input type="text" id="message-input" placeholder="メッセの入力">
+            <input type="text" id="message-input" placeholder="メッセージを入力">
             <button type="button" onclick="sendMessage()">送信</button>
         </div>
     </div>
@@ -112,31 +106,55 @@
     </form>
 
     <script>
-        function sendMessage() {
-            const input = document.getElementById('message-input');
-            const messagesContainer = document.getElementById('chat-messages');
-            const messageText = input.value.trim();
-
-            if (messageText) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('chat-message');
-
-                const iconElement = document.createElement('div');
-                iconElement.classList.add('icon');
-                iconElement.textContent = 'A'; // アイコンの文字（仮）
-
-                const messageContentElement = document.createElement('div');
-                messageContentElement.classList.add('message-content');
-                messageContentElement.textContent = messageText;
-
-                messageElement.appendChild(iconElement);
-                messageElement.appendChild(messageContentElement);
-                messagesContainer.appendChild(messageElement);
-
-                input.value = '';
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        function fetchMessages() {
+            const chatId = '{{ chat_id }}';
+            console.log('チャットID:', chatId);  // チャットIDをコンソールに出力
+    
+            if (chatId) {
+                fetch('/fetch_messages?chat_id=' + chatId)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('ネットワークエラー');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('取得したデータ:', data);  // 取得したデータをコンソールに出力
+                        if (data.success) {
+                            const messagesContainer = document.getElementById('messages-container');
+                            messagesContainer.innerHTML = '';  // メッセージコンテナをクリア
+    
+                            data.messages.forEach(message => {
+                                const messageElement = document.createElement('div');
+                                messageElement.classList.add('chat-message');
+    
+                                const iconElement = document.createElement('div');
+                                iconElement.classList.add('icon');
+                                iconElement.textContent = 'A'; // アイコンの文字（仮）
+    
+                                const messageContentElement = document.createElement('div');
+                                messageContentElement.classList.add('message-content');
+                                messageContentElement.textContent = message.message;
+    
+                                messageElement.appendChild(iconElement);
+                                messageElement.appendChild(messageContentElement);
+                                messagesContainer.appendChild(messageElement);
+                            });
+                        } else {
+                            alert('メッセージの取得に失敗しました');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('メッセージ取得中にエラーが発生しました:', error); // エラーをコンソールに出力
+                    });
+            } else {
+                console.error('チャットIDが空です'); // エラーメッセージ
             }
         }
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchMessages(); // ページロード時にメッセージを取得
+        });
     </script>
 </body>
 </html>
