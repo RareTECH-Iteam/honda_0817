@@ -1,159 +1,154 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>チャットルーム</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room {{ chat_id }}</title>
     <style>
+        /* スタイルシートの設定 */
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-        .chat-container {
-            width: 80%;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            background-color: #fff;
-            position: relative;
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-        .chat-messages {
-            height: 300px;
+        .messages {
+            list-style-type: none;
+            padding: 0;
+            height: 400px;
             overflow-y: auto;
-            margin-bottom: 10px;
         }
-        .chat-message {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .chat-message .icon {
-            width: 40px;
-            height: 40px;
-            background-color: #ccc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .chat-message .message-content {
-            background: #f1f1f1;
-            border-radius: 5px;
+        .messages li {
             padding: 10px;
-        }
-        .chat-input {
+            border-bottom: 1px solid #ddd;
             display: flex;
+            align-items: center;
         }
-        .chat-input input {
+        .messages li:last-child {
+            border-bottom: none;
+        }
+        .message-user {
+            font-weight: bold;
+            margin-right: 10px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        .message-content {
+            margin: 5px 0;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            padding: 10px;
+            flex: 1;
+        }
+        .message-time {
+            font-size: 0.9em;
+            color: #999;
+            margin-left: 10px;
+        }
+        .message-form {
+            display: flex;
+            margin-top: 20px;
+        }
+        .message-form input[type="text"] {
             flex: 1;
             padding: 10px;
-            border: 1px solid #ccc;
+            font-size: 16px;
+            border: 1px solid #ddd;
             border-radius: 5px 0 0 5px;
+            outline: none;
         }
-        .chat-input button {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-left: 0;
-            background: #007bff;
+        .message-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-left: none;
+            background-color: #007BFF;
             color: white;
             border-radius: 0 5px 5px 0;
             cursor: pointer;
         }
-        .chat-input button:hover {
-            background: #0056b3;
+        .message-form button:hover {
+            background-color: #0056b3;
         }
         .exit-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            background: #ff0000;
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .exit-button button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff0000;
             color: white;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        .exit-button:hover {
-            background: #cc0000;
+        .exit-button button:hover {
+            background-color: #cc0000;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <span>チャットルーム</span>
-            <span>自分のアイコン</span>
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <!-- ここにメッセージが追加される -->
-        </div>
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="メッセージを入力">
-            <button type="button" onclick="sendMessage()">送信</button>
+    <div class="container">
+        <h1>チャットルーム {{ chat_id }}</h1>
+        <ul class="messages">
+            {% for message in messages %}
+            <li>
+                <span class="message-user">{{ message['uid'] }}</span>
+                <p class="message-content">{{ message['message'] }}</p>
+                <span class="message-time">{{ message['created_at'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <form class="message-form" method="post">
+            <input type="text" name="message" placeholder="Type your message here">
+            <button type="submit">Send</button>
+        </form>
+        <div class="exit-button">
+            <form method="get" action="{{ url_for('chat_room_list') }}">
+                <button type="submit">Exit</button>
+            </form>
         </div>
     </div>
-    <form action="{{ url_for('chat_room_list') }}">
-        <button type="submit" class="exit-button">退出</button>
-    </form>
 
+    <!-- WebSocket Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
     <script>
-        function fetchMessages() {
-            const chatId = '{{ chat_id }}';
-            console.log('チャットID:', chatId);  // チャットIDをコンソールに出力
-    
-            if (chatId) {
-                fetch('/fetch_messages?chat_id=' + chatId)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('ネットワークエラー');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('取得したデータ:', data);  // 取得したデータをコンソールに出力
-                        if (data.success) {
-                            const messagesContainer = document.getElementById('messages-container');
-                            messagesContainer.innerHTML = '';  // メッセージコンテナをクリア
-    
-                            data.messages.forEach(message => {
-                                const messageElement = document.createElement('div');
-                                messageElement.classList.add('chat-message');
-    
-                                const iconElement = document.createElement('div');
-                                iconElement.classList.add('icon');
-                                iconElement.textContent = 'A'; // アイコンの文字（仮）
-    
-                                const messageContentElement = document.createElement('div');
-                                messageContentElement.classList.add('message-content');
-                                messageContentElement.textContent = message.message;
-    
-                                messageElement.appendChild(iconElement);
-                                messageElement.appendChild(messageContentElement);
-                                messagesContainer.appendChild(messageElement);
-                            });
-                        } else {
-                            alert('メッセージの取得に失敗しました');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('メッセージ取得中にエラーが発生しました:', error); // エラーをコンソールに出力
-                    });
-            } else {
-                console.error('チャットIDが空です'); // エラーメッセージ
+        const socket = io.connect('http://localhost:5000');
+        const input = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendMessageButton');
+        const messages = document.getElementById('messages');
+
+        sendButton.addEventListener('click', function() {
+            if (input.value) {
+                socket.emit('chat message', { message: input.value });
+                input.value = '';
             }
-        }
-    
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchMessages(); // ページロード時にメッセージを取得
+        });
+
+        socket.on('chat message', function(data) {
+            const item = document.createElement('li');
+            item.innerHTML = `
+                <span class="message-user">${data.uid}</span>
+                <p class="message-content">${data.message}</p>
+                <span class="message-time">${new Date().toLocaleString()}</span>
+            `;
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
         });
     </script>
 </body>

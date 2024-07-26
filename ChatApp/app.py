@@ -3,13 +3,18 @@ from datetime import timedelta
 import hashlib
 import uuid
 import re
-# from flask_wtf import CSRFProtect
+from flask_socketio import SocketIO, emit
+import mysql.connector
+from mysql.connector import Error
+import os
 from models import dbConnect
+
 
 app = Flask(__name__)
 app.secret_key = uuid.uuid4().hex
 app.permanent_session_lifetime = timedelta(days=30)
-# csrf = CSRFProtect(app)  # CSRFProtect を初期化して Flask アプリケーションに登録
+# Socket.IO の設定
+socketio = SocketIO(app)
 
 # サインアップページの表示
 @app.route('/signup')
@@ -77,7 +82,7 @@ def userLogin():
                 return redirect('/')
     return redirect('/login')
 
-# チャンネル一覧ページの表示
+# 一覧ページの表示
 @app.route('/')
 def index():
     uid = session.get("uid")
@@ -131,6 +136,43 @@ def chat_room_list():
     chat_rooms = dbConnect.getChatRoomList(uid)
     return render_template('chat_room_list.html', chat_rooms=chat_rooms)
 
+# chat_room.htmlのURLのエンドポイント
+@app.route('/chat_room', methods=['GET', 'POST'])
+def chat_room():
+    uid = session.get("uid")
+    if uid is None:
+        return redirect('/login')
+    
+    chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
+    if chat_id is None:
+        return redirect('/chat_room_list')  # チャットIDが指定されていない場合はチャットルームリストにリダイレクト
+
+    if request.method == 'POST':
+        # メッセージの投稿
+        message = request.form.get('message')
+        
+        if message:
+            dbConnect.createMessage(uid, chat_id, message)
+            # Socket.IO を利用してメッセージを全クライアントにブロードキャスト
+            socketio.emit('new_message', {'uid': uid, 'chat_id': chat_id, 'message': message}, room=chat_id)
+            return redirect(f'/chat_room?room_id={chat_id}')
+
+    # メッセージの取得
+    messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
+    return render_template('chat_room.html', chat_id=chat_id, messages=messages)
+
+@socketio.on('chat message')
+def handle_chat_message(data):
+    uid = session.get("uid")
+    chat_id = request.args.get('room_id')
+    message = data.get('message')
+    if uid and chat_id and message:
+        try:
+            dbConnect.createMessage(uid, chat_id, message)
+            # クライアントに新しいメッセージをブロードキャスト
+            socketio.emit('chat message', {'uid': uid, 'chat_id': chat_id, 'message': message}, broadcast=True)
+        except Exception as e:
+            print(f'Error: {str(e)}')
 
 # チャットルームの表示とメッセージ送信のエンドポイント
 # @app.route('/chat_room', methods=['GET', 'POST'])
@@ -167,17 +209,7 @@ def chat_room_list():
 #     chats = dbConnect.getChatRoomList(uid)
 #     return render_template('chat_room.html', chats=chats, chat_id=chat_id)
 
-@app.route('/chat_room')
-def chat_room():
-    uid = session.get("uid")
-    if uid is None:
-        return redirect('/login')
-    
-    chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
-    if chat_id:
-        # チャットIDが指定されている場合、メッセージを取得
-        messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
-        return render_template('chat_room.html', chat_id=chat_id, messages=messages)
+
     
     # チャットIDが指定されていない場合、チャットルームの一覧を表示
     chats = dbConnect.getChatRoomList(uid)
@@ -225,7 +257,19 @@ def matching_request_list():
 def logout():
     return render_template('registration/login.html')
 
+# Socket.IO のイベントハンドラー
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
 
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+# Socket.IO のエラーハンドリング
+@socketio.on_error()
+def handle_error(e):
+    print(f'Error: {e}')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=False)
