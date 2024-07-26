@@ -31,22 +31,45 @@ CREATE TABLE messages (
     created_at timestamp not null default current_timestamp
 );
 
+-- -- Create matches table
+-- CREATE TABLE matches (
+--     match_id serial,
+--     user1_id varchar(255) NOT NULL,
+--     user2_id varchar(255) NOT NULL,
+--     status enum('pending', 'accepted', 'declined') NOT NULL DEFAULT 'pending',
+--     PRIMARY KEY (match_id),
+--     FOREIGN KEY (user1_id) REFERENCES users(u_id) ON DELETE CASCADE,
+--     FOREIGN KEY (user2_id) REFERENCES users(u_id) ON DELETE CASCADE
+-- );
+
+-- -- Create friendRequests table
+-- CREATE TABLE friendRequests (
+--     request_id serial,
+--     from_user_id varchar(255) NOT NULL,
+--     to_user_id varchar(255) NOT NULL,
+--     status enum('pending', 'accepted', 'declined') NOT NULL DEFAULT 'pending',
+--     PRIMARY KEY (request_id),
+--     FOREIGN KEY (from_user_id) REFERENCES users(u_id) ON DELETE CASCADE,
+--     FOREIGN KEY (to_user_id) REFERENCES users(u_id) ON DELETE CASCADE
+-- );
+
 INSERT INTO users (uid, username, email, password, address, greeting) VALUES
 ('1', 'alice', 'alice@example.com', 'password1', '北海道', 'こんにちは、アリスです。'),
 ('2', 'bob', 'bob@example.com', 'password2', '北海道', 'こんにちは、ボブです。'),
-('3', 'charlie', 'charlie@example.com', 'password3', '北海道', 'こんにちは、チャーリーです。'),
-('4', 'david', 'david@example.com', 'password4', '北海道', 'こんにちは、デイビッドです。'),
-('5', 'eve', 'eve@example.com', 'password5', '北海道', 'こんにちは、イヴです。'),
-('6', 'frank', 'frank@example.com', 'password6', '東京都', 'こんにちは、フランクです。'),
-('7', 'grace', 'grace@example.com', 'password7', '東京都', 'こんにちは、グレースです。'),
-('8', 'heidi', 'heidi@example.com', 'password8', '東京都', 'こんにちは、ハイジです。'),
-('9', 'ivan', 'ivan@example.com', 'password9', '東京都', 'こんにちは、イヴァンです。'),
-('10', 'judy', 'judy@example.com', 'password10', '東京都', 'こんにちは、ジュディです。');
+('3', 'charlie', 'charlie@example.com', 'password3', '北海道', 'こんにちは、チャーリーです。');
+-- ('4', 'david', 'david@example.com', 'password4', '北海道', 'こんにちは、デイビッドです。'),
+-- ('5', 'eve', 'eve@example.com', 'password5', '北海道', 'こんにちは、イヴです。'),
+-- ('6', 'frank', 'frank@example.com', 'password6', '東京都', 'こんにちは、フランクです。'),
+-- ('7', 'grace', 'grace@example.com', 'password7', '東京都', 'こんにちは、グレースです。'),
+-- ('8', 'heidi', 'heidi@example.com', 'password8', '東京都', 'こんにちは、ハイジです。'),
+-- ('9', 'ivan', 'ivan@example.com', 'password9', '東京都', 'こんにちは、イヴァンです。'),
+-- ('10', 'judy', 'judy@example.com', 'password10', '東京都', 'こんにちは、ジュディです。');
 
 -- チャットルームの挿入
 INSERT INTO chat (uid, name, abstract, user_ids) VALUES
-('1', 'Alice and Bob Chat Room', 'AliceさんとBobさんのチャットルームです', '1,2');
-
+('1', 'Alice and Bob Chat Room', 'AliceさんとBobさんのチャットルームです', '1,2'),
+('1', 'test1', 'AliceさんとBobさんのチャットルームです', '1,3');
+-- ('1', 'tes', 'AliceさんとBobさんのチャットルームです', '1,2');
 -- ('1', '北海道住民1とのメッセージ', 'Aliceさんの最初のチャットルームです', '1'),
 -- ('1', '北海道住民2とのメッセージ', 'Aliceさんのセカンドチャットルームです', '1'),
 -- ('1', '東京都民1とのメッセージ', 'Aliceさんのサードチャットルームです', '1'),
@@ -54,11 +77,12 @@ INSERT INTO chat (uid, name, abstract, user_ids) VALUES
 -- ('1', '東京都民3とのメッセージ', 'Aliceさんのフィフスチャットルームです', '1');
 
 -- メッセージの挿入
-INSERT INTO messages (uid, cid, message) VALUES
-('1', 1, 'こんにちは、アリスです。');
--- ('2', 1, 'こんにちは、ボブです。お元気ですか？'),
--- ('1', 1, 'はい、元気です。ボブさんはどうですか？'),
--- ('2', 1, '私も元気です。');
+INSERT INTO messages(id, uid, cid, message)VALUES
+(1, '1', '1', 'こんにちは、アリスです。');
+-- (2, '2', '1', 'こんにちは、ボブです。');
+-- -- ('2', 1, 'こんにちは、ボブです。お元気ですか？'),
+-- -- ('1', 1, 'はい、元気です。ボブさんはどうですか？'),
+-- -- ('2', 1, '私も元気です。');
 
 -- -- その他のメッセージ
 -- INSERT INTO messages (uid, cid, message) VALUES
