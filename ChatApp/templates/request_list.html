@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matching Request List</title>
+    <title>マッチング依頼一覧</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -134,11 +134,11 @@
     }
 
     function cancelAction() {
-        window.location.href = "{{ url_for('index') }}";
+        window.location.href = "{{ url_for('home') }}";
     }
 
     function acceptAction() {
-        window.location.href = "{{ url_for('chat_room') }}";
+        window.location.href = "{{ url_for('chat') }}";
     }
 
     document.getElementById('overlay').onclick = hidePopup;

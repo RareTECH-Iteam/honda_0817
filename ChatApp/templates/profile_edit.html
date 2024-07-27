@@ -92,7 +92,7 @@
 <body>
     <div class="container">
         <h1>ユーザー情報編集</h1>
-        <form action="{{ url_for('detail_edit') }}" method="post">
+        <form action="{{ url_for('profile_edit') }}" method="post">
             <div>
                 <label for="username">ユーザー名:</label>
                 <input type="text" id="username" name="username" value="{{ user.username }}" required>
@@ -163,7 +163,7 @@
             </div>
         </form>
         <div>
-            <a href="{{ url_for('detail') }}">キャンセル</a>
+            <a href="{{ url_for('profile') }}">キャンセル</a>
         </div>
     </div>
 </body>

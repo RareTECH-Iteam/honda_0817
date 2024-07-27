@@ -76,16 +76,16 @@
         <div class="header">
             <div class="left">チャット</div>
             <div class="right">
-                <a href="{{ url_for('detail') }}">
+                <a href="{{ url_for('profile') }}">
                     <span>アイコン</span>
                 </a>
                 <a href="{{ url_for('logout') }}">ログアウト</a>
             </div>
         </div>
         <div class="menu">
-            <a href="{{ url_for('chat_room_list') }}">チャットルーム一覧</a>
+            <a href="{{ url_for('chat_list') }}">チャットルーム一覧</a>
             <a href="{{ url_for('matching') }}">＋マッチング</a>
-            <a href="{{ url_for('matching_request_list') }}">マッチング依頼一覧</a>
+            <a href="{{ url_for('request_list') }}">マッチング依頼一覧</a>
         </div>
     </div>
 </body>

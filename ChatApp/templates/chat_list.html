@@ -99,7 +99,7 @@
             {% if chat_rooms %}
                 {% for room in chat_rooms %}
                 <li>
-                    <a href="{{ url_for('chat_room', room_id=room['id']) }}" class="chat-link">
+                    <a href="{{ url_for('chat', room_id=room['id']) }}" class="chat-link">
                         <div class="icon"></div> {{ room['name'] }}
                     </a>
                 </li>

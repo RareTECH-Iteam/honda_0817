@@ -1,3 +1,4 @@
+# 構築や動作に必要なライブラリやモジュールをインポート
 from flask import Flask, request, redirect, render_template, session, flash, abort, jsonify
 from datetime import timedelta
 import hashlib
@@ -9,19 +10,19 @@ import re
 import os
 from models import dbConnect
 
-
+# Flask アプリケーションのインスタンスを作成
 app = Flask(__name__)
 app.secret_key = uuid.uuid4().hex
-app.permanent_session_lifetime = timedelta(days=30)
+app.permanent_session_lifetime = timedelta(days=7)  # セッションの有効期限を7日に変更
 # Socket.IO の設定
 # socketio = SocketIO(app)
 
-# サインアップページの表示
+# 新規会員登録ページの表示
 @app.route('/signup')
 def signup():
     return render_template('registration/signup.html')
 
-# サインアップ処理
+# 新規会員登録の処理、フォームを送信するPOSTの処理を実装
 @app.route('/signup', methods=['POST'])
 def userSignup():
     username = request.form.get('username')
@@ -42,13 +43,13 @@ def userSignup():
     else:
         uid = uuid.uuid4()
         # password = hashlib.sha256(password1.encode('utf-8')).hexdigest()
-        password = password1  # ハッシュ化しない
-        DBuser = dbConnect.getUser(email)
+        password = password1  # local検証の為、一時的にハッシュ化しない
+        DBuser = dbConnect.getUser(email) # メールアドレスを元にユーザー情報を検索する
 
         if DBuser != None:
             flash('既に登録されているようです')
         else:
-            dbConnect.createUser(uid, username, email, password, address, greeting)
+            dbConnect.createUser(uid, username, email, password, address, greeting) # ユーザー情報の追加
             UserId = str(uid)
             session['uid'] = UserId
             return redirect('/')
@@ -59,7 +60,7 @@ def userSignup():
 def login():
     return render_template('registration/login.html')
 
-# ログイン処理
+# ログイン処理、フォームを送信するPOSTの処理を実装
 @app.route('/login', methods=['POST'])
 def userLogin():
     email = request.form.get('email')
@@ -68,7 +69,7 @@ def userLogin():
     if email =='' or password == '':
         flash('空のフォームがあるようです')
     else:
-        user = dbConnect.getUser(email)
+        user = dbConnect.getUser(email) # メールアドレスを元にユーザー情報を検索する
         if user is None:
             flash('このユーザーは存在しません')
         else:
@@ -82,30 +83,30 @@ def userLogin():
                 return redirect('/')
     return redirect('/login')
 
-# 一覧ページの表示
+# ①チャットルーム一覧、②＋マッチング、③マッチング依頼一覧画面を表示
 @app.route('/')
-def index():
+def home():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
     else:
-        channels = dbConnect.getChatAll()
+        channels = dbConnect.getChatAll() # ①②③のすべてのチャットを取得
         channels = channels[::-1]  # スライスを使ってタプルを逆順にする
-    return render_template('index.html', channels=channels, uid=uid)
+    return render_template('home.html', channels=channels, uid=uid)
 
-# ホームの「/」の中の「detail」URLのエンドポイント
-@app.route('/detail')
-def detail():
+# ホーム画面からプロフィール画面にページの遷移
+@app.route('/profile')
+def profile():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
     else:
         user = dbConnect.getUserByUid(uid)
-    return render_template('detail.html', user=user)
+    return render_template('profile.html', user=user)
 
-# ユーザ情報の更新
-@app.route('/detail_edit', methods=['GET', 'POST'])
-def detail_edit():
+# プロフィール画面からユーザ情報の更新
+@app.route('/profile_edit', methods=['GET', 'POST'])
+def profile_edit():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
@@ -120,16 +121,16 @@ def detail_edit():
         # データベースを更新
         dbConnect.updateUser(uid, username, email, address, greeting)
         
-        # 更新後の詳細ページにリダイレクト
-        return redirect('/detail')
+        # 更新後のプロフィール画面ページにリダイレクト
+        return redirect('/profile')
     else:
         # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
         user = dbConnect.getUserByUid(uid)
-        return render_template('detail_edit.html', user=user)
+        return render_template('profile_edit.html', user=user)
 
-# ホームの「/」の中の「chat_room_list」URLのエンドポイント
-@app.route('/chat_room_list')
-def chat_room_list():
+# ホーム画面からchat_listページに画面遷移
+@app.route('/chat_list')
+def chat_list():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
@@ -141,29 +142,24 @@ def chat_room_list():
         user_numbers = channel["user_ids"].split(",")
         if uid in user_numbers:
             chatlist.append(channel)
-    # print(user_numbers)
+    return render_template('chat_list.html', chat_rooms=chatlist)
 
-    # for user_number in user_numbers:
-    #     if user_number == uid:
-    #         chat_rooms = dbConnect.getChatRoomList(uid)
-    return render_template('chat_room_list.html', chat_rooms=chatlist)
-
-
-@app.route('/chat_room', methods=['GET', 'POST'])
-def chat_room():
+# チャット画面からGETとPOSTの処理を実装
+@app.route('/chat', methods=['GET', 'POST'])
+def chat():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
     
     chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
     if chat_id is None:
-        return redirect('/chat_room_list')  # チャットIDが指定されていない場合はチャットルームリストにリダイレクト
+        return redirect('/chat_list')  # チャットIDが指定されていない場合はチャットルームリストにリダイレクト
     if request.method == 'GET':
     # メッセージの取得
         messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
-        print(messages, '164')
+        # print(messages, '164')
         # print(message, flush=True)
-        return render_template('chat_room.html', chat_id=chat_id, messages=messages)
+        return render_template('chat.html', chat_id=chat_id, messages=messages)
 
     if request.method == 'POST':
         # メッセージの投稿
@@ -173,119 +169,25 @@ def chat_room():
             dbConnect.createMessage(uid, chat_id, message)
             # Socket.IO を利用してメッセージを全クライアントにブロードキャスト
             # socketio.emit('new_message', {'uid': uid, 'chat_id': chat_id, 'message': message}, room=chat_id)
-            return redirect(f'/chat_room?room_id={chat_id}')
-
-
-
-# @socketio.on('chat message')
-# def handle_chat_message(data):
-#     uid = session.get("uid")
-#     chat_id = request.args.get('room_id')
-#     message = data.get('message')
-#     if uid and chat_id and message:
-#         try:
-#             dbConnect.createMessage(uid, chat_id, message)
-#             # クライアントに新しいメッセージをブロードキャスト
-#             socketio.emit('chat message', {'uid': uid, 'chat_id': chat_id, 'message': message}, broadcast=True)
-#         except Exception as e:
-#             print(f'Error: {str(e)}')
-
-# チャットルームの表示とメッセージ送信のエンドポイント
-# @app.route('/chat_room', methods=['GET', 'POST'])
-# def chat_room():
-#     uid = session.get("uid")
-#     if uid is None:
-#         return redirect('/login')
-    
-#     if request.method == 'POST':
-#         data = request.get_json()
-#         chat_id = data.get('chat_id')
-#         message = data.get('message')
-        
-#         if chat_id and message:
-#             if chat_id.isdigit():  # chat_id が数字かどうかを確認
-#                 dbConnect.addMessage(uid, int(chat_id), message)
-#                 return jsonify(success=True)
-#             else:
-#                 return jsonify(success=False, error="Invalid chat_id")
-#         else:
-#             return jsonify(success=False, error="Invalid data")
-    
-#     # GETリクエストの場合、チャットルームを表示
-#     chat_id = request.args.get('chat_id')
-    
-#     if chat_id:
-#         if chat_id.isdigit():  # chat_id が数字かどうかを確認
-#             messages = dbConnect.getMessagesByChatRoom(uid, int(chat_id))
-#             return jsonify(success=True, messages=messages)
-#         else:
-#             return jsonify(success=False, error="Invalid chat_id")
-    
-#     # チャットIDが指定されていない場合、チャットルームの一覧を表示
-#     chats = dbConnect.getChatRoomList(uid)
-#     return render_template('chat_room.html', chats=chats, chat_id=chat_id)
-
-
+            return redirect(f'/chat?room_id={chat_id}')
     
     # チャットIDが指定されていない場合、チャットルームの一覧を表示
     chats = dbConnect.getChatRoomList(uid)
     return render_template('chat_room.html', chats=chats)
-
-# @app.route('/fetch_messages')
-# def fetch_messages():
-#     chat_id = request.args.get('chat_id')
-#     uid = session.get("uid")
-#     if uid is None:
-#         return redirect('/login')
-    
-#     if chat_id and chat_id.isdigit():
-#         messages = dbConnect.getMessagesByChatRoom(uid, int(chat_id))
-#         return jsonify(success=True, messages=messages)
-#     else:
-#         return jsonify(success=False, error="Invalid chat_id")
-
-@app.route('/fetch_messages')
-def fetch_messages():
-    chat_id = request.args.get('chat_id')
-    if chat_id:
-        messages = dbConnect.getMessagesByChatRoom(chat_id)
-        return jsonify({'success': True, 'messages': messages})
-    else:
-        return jsonify({'success': False, 'error': 'チャットIDが指定されていません'})
 
 # 「matching」URLのエンドポイント
 @app.route('/matching')
 def matching():
     return render_template('matching.html')
 
-
-# 「matching_confirm」URLのエンドポイント
-@app.route('/matching_confirm')
-def matching_confirm():
-    return render_template('matching_confirm.html')
-
 # マッチングリクエスト一覧ページの表示
 @app.route('/request_list.html')
-def matching_request_list():
+def request_list():
     return render_template('request_list.html')
 
 @app.route('/logout')
 def logout():
     return render_template('registration/login.html')
-
-# Socket.IO のイベントハンドラー
-# @socketio.on('connect')
-# def handle_connect():
-#     print('Client connected')
-
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     print('Client disconnected')
-
-# # Socket.IO のエラーハンドリング
-# @socketio.on_error()
-# def handle_error(e):
-#     print(f'Error: {e}')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=False)

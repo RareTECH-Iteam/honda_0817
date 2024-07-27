@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>詳細</title>
+    <title>プロフィール詳細</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -71,8 +71,8 @@
             <div><strong>あいさつ:</strong> {{ user.greeting }}</div>
         </div>
         <div class="buttons">
-            <button onclick="location.href='{{ url_for('index') }}'">戻る</button>
-            <button onclick="location.href='{{ url_for('detail_edit') }}'">編集</button>
+            <button onclick="location.href='{{ url_for('home') }}'">戻る</button>
+            <button onclick="location.href='{{ url_for('profile_edit') }}'">編集</button>
         </div>
     </div>
 </body>

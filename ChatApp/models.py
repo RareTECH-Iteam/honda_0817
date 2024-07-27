@@ -4,7 +4,7 @@ from flask import abort
 from flask_socketio import SocketIO
 
 # FlaskアプリケーションとSocketIOの設定
-socketio = SocketIO()  # Flaskアプリケーションと一緒にSocketIOを初期化します
+# socketio = SocketIO()  # Flaskアプリケーションと一緒にSocketIOを初期化します
 
 class dbConnect:
     # ユーザー情報の追加
@@ -36,7 +36,7 @@ class dbConnect:
         finally:
             cur.close()  # カーソルを閉じる
 
-    # uidを指定してdetail.htmlに表示する
+    # uidを指定してprofile.htmlに表示する
     def getUserByUid(uid):
         try:
             conn = DB.getConnection()
@@ -65,7 +65,22 @@ class dbConnect:
         finally:
             cur.close()
 
-    # チャットルーム一覧を取得するメソッド
+    # ①チャットルーム一覧、②＋マッチング、③マッチング依頼一覧画面を表示
+    def getChatAll():
+        try:
+            conn = DB.getConnection()  # データベース接続を取得
+            cur = conn.cursor()  # カーソルを作成
+            sql = "SELECT * FROM chat;"  # SQLクエリを定義
+            cur.execute(sql)  # クエリを実行
+            chats = cur.fetchall()  # 結果を全て取得
+            return chats  # チャット情報を返す
+        except Exception as e:
+            print(e + 'が発生しています')  # エラーメッセージを出力
+            abort(500)  # HTTP 500エラーを返す
+        finally:
+            cur.close()  # カーソルを閉じる
+
+    # uidを軸にchatテーブルから情報を検索して取得
     def getChatRoom(uid):
         try:
             conn = DB.getConnection()  # データベース接続を取得
@@ -128,20 +143,7 @@ class dbConnect:
         finally:
             cur.close()
 
-    # uidに紐づくメッセージを削除する処理
-    # def deleteMessage(message_id):
-    #     try:
-    #         conn = DB.getConnection()
-    #         cur = conn.cursor()
-    #         sql = "DELETE FROM messages WHERE id=%s;"
-    #         cur.execute(sql, (message_id))
-    #         conn.commit()
-    #     except Exception as e:
-    #         print(e + 'が発生しています')
-    #         abort(500)
-    #     finally:
-    #         cur.close()
-
+    # uidに紐づくメッセージを取得
     def getMessagesByChatRoom(uid, chat_id):
         try:
             conn = DB.getConnection()  # データベース接続を取得
@@ -168,17 +170,16 @@ class dbConnect:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
 
-    # # すべてのチャットを取得
-    def getChatAll():
-        try:
-            conn = DB.getConnection()  # データベース接続を取得
-            cur = conn.cursor()  # カーソルを作成
-            sql = "SELECT * FROM chat;"  # SQLクエリを定義
-            cur.execute(sql)  # クエリを実行
-            chats = cur.fetchall()  # 結果を全て取得
-            return chats  # チャット情報を返す
-        except Exception as e:
-            print(e + 'が発生しています')  # エラーメッセージを出力
-            abort(500)  # HTTP 500エラーを返す
-        finally:
-            cur.close()  # カーソルを閉じる
+    # uidに紐づくメッセージを削除する処理
+    # def deleteMessage(message_id):
+    #     try:
+    #         conn = DB.getConnection()
+    #         cur = conn.cursor()
+    #         sql = "DELETE FROM messages WHERE id=%s;"
+    #         cur.execute(sql, (message_id))
+    #         conn.commit()
+    #     except Exception as e:
+    #         print(e + 'が発生しています')
+    #         abort(500)
+    #     finally:
+    #         cur.close()

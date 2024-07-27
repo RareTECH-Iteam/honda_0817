@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room {{ chat_id }}</title>
+    <title>チャットルーム {{ chat_id }}</title>
     <style>
         /* スタイルシートの設定 */
         body {
@@ -116,11 +116,11 @@
         </ul>
         <form class="message-form" method="post">
             <input type="text" name="message" placeholder="Type your message here">
-            <button type="submit">Send</button>
+            <button type="submit">送信</button>
         </form>
         <div class="exit-button">
-            <form method="get" action="{{ url_for('chat_room_list') }}">
-                <button type="submit">Exit</button>
+            <form method="get" action="{{ url_for('chat_list') }}">
+                <button type="submit">退出</button>
             </form>
         </div>
     </div>
