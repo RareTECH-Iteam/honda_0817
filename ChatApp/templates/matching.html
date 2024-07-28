@@ -110,7 +110,7 @@
 <body>
     <div class="header">
         <span>チャット</span>
-        <select>
+        <select id="address-select">
             <option value="">旅行先を入力</option>
             <option value="北海道">北海道</option>
             <option value="青森県">青森県</option>
@@ -160,34 +160,11 @@
             <option value="鹿児島県">鹿児島県</option>
             <option value="沖縄県">沖縄県</option>
         </select>
-        <button class="search-btn">検索</button>
+        <button class="search-btn" onclick="search()">検索</button>
         <span>自分のアイコン</span>
     </div>
-    <div class="icon-list">
-        <div class="icon-item" onclick="showPopup('Aさん')">
-            <div class="icon-circle"></div>
-            <span>アイコンA</span>
-            <span>居住地</span>
-            <span>あいさつ</span>
-        </div>
-        <div class="icon-item" onclick="showPopup('Bさん')">
-            <div class="icon-circle"></div>
-            <span>アイコンB</span>
-            <span>居住地</span>
-            <span>あいさつ</span>
-        </div>
-        <div class="icon-item" onclick="showPopup('Cさん')">
-            <div class="icon-circle"></div>
-            <span>アイコンC</span>
-            <span>居住地</span>
-            <span>あいさつ</span>
-        </div>
-        <div class="icon-item" onclick="showPopup('Dさん')">
-            <div class="icon-circle"></div>
-            <span>アイコンD</span>
-            <span>居住地</span>
-            <span>あいさつ</span>
-        </div>
+    <div id="results" class="icon-list">
+        <!-- 検索結果がここに表示されます -->
     </div>
     
     <!-- ポップアップ -->
@@ -200,17 +177,65 @@
     </div>
 
     <script>
-        function showPopup(name) {
-            document.getElementById('popup-text').innerText = name + 'とのルームを作成しますか？';
+        async function search() {
+            const address = document.getElementById('address-select').value;
+            if (address) {
+                try {
+                    const response = await fetch('/matching', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ address: address }),
+                    });
+
+                    if (response.ok) {
+                        const users = await response.json();
+                        displayResults(users);
+                    } else {
+                        alert('検索に失敗しました');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('エラーが発生しました');
+                }
+            } else {
+                alert('住所を選択してください');
+            }
+        }
+
+        function displayResults(users) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';  // 既存の結果をクリア
+            if (users.length > 0) {
+                users.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.classList.add('icon-item');
+                    userDiv.innerHTML = `
+                        <div class="icon-circle"></div>
+                        <span>${user.name}</span>
+                        <span>${user.address}</span>
+                        <span>${user.greeting}</span>
+                    `;
+                    userDiv.onclick = () => showPopup(user.name, user.address, user.greeting);
+                    resultsDiv.appendChild(userDiv);
+                });
+            } else {
+                resultsDiv.innerHTML = '<p>該当するユーザーが見つかりませんでした。</p>';
+            }
+        }
+
+        function showPopup(name, address, greeting) {
+            document.getElementById('popup-text').innerText = `${name} (${address}) とのルームを作成しますか？`;
             document.getElementById('popup').style.display = 'flex';
         }
 
         function cancel() {
-            window.location.href = "{{ url_for('matching') }}";
+            document.getElementById('popup').style.display = 'none';
         }
 
         function create() {
-            window.location.href = "{{ url_for('chat') }}";
+            window.location.href = "{{ url_for('chat') }}";  // チャットページへの遷移
         }
     </script>
 </body>

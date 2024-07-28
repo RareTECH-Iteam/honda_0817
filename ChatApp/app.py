@@ -176,9 +176,23 @@ def chat():
     return render_template('chat_room.html', chats=chats)
 
 # 「matching」URLのエンドポイント
-@app.route('/matching')
+@app.route('/matching', methods=['GET', 'POST'])
 def matching():
-    return render_template('matching.html')
+    if request.method == 'POST':
+        address = request.json.get('address')
+        if address:
+            users = dbConnect.getUsersByAddress(address)  # データを取得
+            # デバッグ用に返すデータの形式を確認
+            print('Retrieved users:', users)
+            # 各ユーザーが辞書であることを確認し、キーを使用してアクセス
+            return jsonify([{
+                'name': user.get('username'),       # ユーザー名
+                'address': user.get('address'),    # ユーザーの住所
+                'greeting': user.get('greeting')    # 挨拶
+            } for user in users])
+        return jsonify({'error': '住所が指定されていません'}), 400
+    else:
+        return render_template('matching.html')
 
 # マッチングリクエスト一覧ページの表示
 @app.route('/request_list.html')

@@ -170,6 +170,22 @@ class dbConnect:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
 
+    # 都道府県でユーザーを検索する
+    def getUsersByAddress(address):
+        try:
+            conn = DB.getConnection()  # データベース接続を取得
+            cur = conn.cursor()  # カーソルを作成
+            sql = "SELECT * FROM users WHERE address = %s;"  # SQLクエリを定義
+            cur.execute(sql, (address,))  # クエリを実行
+            users = cur.fetchall()  # 結果を全て取得
+            return users  # ユーザー情報を返す
+        except Exception as e:
+            print(str(e) + 'が発生しています')  # エラーメッセージを出力
+            abort(500)  # HTTP 500エラーを返す
+        finally:
+            cur.close()  # カーソルを閉じる
+            conn.close()  # データベース接続を閉じる
+
     # uidに紐づくメッセージを削除する処理
     # def deleteMessage(message_id):
     #     try:
