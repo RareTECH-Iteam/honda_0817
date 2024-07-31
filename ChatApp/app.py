@@ -144,7 +144,7 @@ def chat_list():
             chatlist.append(channel)
     return render_template('chat_list.html', chat_rooms=chatlist)
 
-# チャット画面からGETとPOSTの処理を実装
+# チャット画面からGETとPOSTの処理を実装 追加7/28夜間追加
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
     uid = session.get("uid")
@@ -152,47 +152,130 @@ def chat():
         return redirect('/login')
     
     chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
-    if chat_id is None:
-        return redirect('/chat_list')  # チャットIDが指定されていない場合はチャットルームリストにリダイレクト
-    if request.method == 'GET':
-    # メッセージの取得
-        messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
-        # print(messages, '164')
-        # print(message, flush=True)
-        return render_template('chat.html', chat_id=chat_id, messages=messages)
+    if chat_id:
+        if request.method == 'GET':
+            # メッセージの取得
+            messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
+            return render_template('chat.html', chat_id=chat_id, messages=messages)
 
-    if request.method == 'POST':
-        # メッセージの投稿
-        message = request.form.get('message')
-        # print(message, flush=True)
-        if message:
-            dbConnect.createMessage(uid, chat_id, message)
-            # Socket.IO を利用してメッセージを全クライアントにブロードキャスト
-            # socketio.emit('new_message', {'uid': uid, 'chat_id': chat_id, 'message': message}, room=chat_id)
-            return redirect(f'/chat?room_id={chat_id}')
-    
-    # チャットIDが指定されていない場合、チャットルームの一覧を表示
-    chats = dbConnect.getChatRoomList(uid)
-    return render_template('chat_room.html', chats=chats)
+        if request.method == 'POST':
+            # メッセージの投稿
+            message = request.form.get('message')
+            if message:
+                dbConnect.createMessage(uid, chat_id, message)
+                return redirect(f'/chat?room_id={chat_id}')
+    else:
+        # チャットIDが指定されていない場合、チャットルームの一覧を表示
+        chats = dbConnect.getChatRoomList(uid)
+        return render_template('chat_list.html', chats=chats)
 
-# 「matching」URLのエンドポイント
+# 「matching」URLのエンドポイント　7/31に処理を新規追加した
 @app.route('/matching', methods=['GET', 'POST'])
 def matching():
     if request.method == 'POST':
         address = request.json.get('address')
         if address:
             users = dbConnect.getUsersByAddress(address)  # データを取得
-            # デバッグ用に返すデータの形式を確認
-            print('Retrieved users:', users)
             # 各ユーザーが辞書であることを確認し、キーを使用してアクセス
             return jsonify([{
-                'name': user.get('username'),       # ユーザー名
+                'uid': user.get('uid'),            # ユーザーID (修正)
+                'name': user.get('username'),      # ユーザー名
                 'address': user.get('address'),    # ユーザーの住所
-                'greeting': user.get('greeting')    # 挨拶
+                'greeting': user.get('greeting')   # 挨拶
             } for user in users])
         return jsonify({'error': '住所が指定されていません'}), 400
     else:
         return render_template('matching.html')
+
+# 「matching」URLのエンドポイント
+# @app.route('/matching', methods=['GET', 'POST'])
+# def matching():
+#     if request.method == 'POST':
+#         address = request.json.get('address')
+#         if address:
+#             users = dbConnect.getUsersByAddress(address)  # データを取得
+#             # デバッグ用に返すデータの形式を確認
+#             # print('Retrieved users:', users)
+#             # 各ユーザーが辞書であることを確認し、キーを使用してアクセス
+#             return jsonify([{
+#                 'name': user.get('username'),       # ユーザー名
+#                 'address': user.get('address'),    # ユーザーの住所
+#                 'greeting': user.get('greeting')    # 挨拶
+#             } for user in users])
+#         return jsonify({'error': '住所が指定されていません'}), 400
+#     else:
+#         return render_template('matching.html')
+
+# チャットルームを作成するエンドポイント
+# @app.route('/create_chatroom', methods=['POST'])
+# def create_chatroom():
+#     uid = session.get("uid")
+#     if uid is None:
+#         return jsonify({'error': 'ログインが必要です'}), 403
+
+#     data = request.json
+#     name = data.get('name')
+#     address = data.get('address')
+#     user_ids = data.get('user_ids', '')  # ここでデフォルト値として空文字列を設定
+
+#     # デバッグ出力
+#     print(f"Received data: name={name}, address={address}, user_ids={user_ids}")
+
+#     if not name or not address or not user_ids:
+#         return jsonify({'error': '名前、住所、およびユーザーIDが必要です'}), 400
+
+#     # user_ids がカンマ区切りの文字列であることを確認し、リストに変換
+#     user_ids_list = user_ids.split(',')
+#     if uid not in user_ids_list:
+#         user_ids_list.append(uid)  # ログインユーザーの UID を追加
+#     user_ids_string = ','.join(user_ids_list)  # 再びカンマ区切りの文字列に変換
+
+#     try:
+#         chatroom_id = dbConnect.createChatroom(uid, name, address, user_ids)
+
+#         if chatroom_id:
+#             return jsonify({'success': True, 'chatroom_id': chatroom_id}), 200
+#         else:
+#             return jsonify({'error': 'チャットルームの作成に失敗しました'}), 500
+#     except Exception as e:
+#         print(f"エラーが発生しました: {str(e)}")
+#         return jsonify({'error': 'サーバーエラー'}), 500
+
+@app.route('/create_chatroom', methods=['POST'])
+def create_chatroom():
+    data = request.get_json()
+    print(f"Received data: {data}")  # デバッグ用ログ
+
+    name = data.get('name')
+    address = data.get('address')
+    uid = data.get('uid')  # 修正: フロントエンドから送信された uid を取得
+    
+    print(f"Received UID: {uid}")  # デバッグ用ログ
+
+    logged_in_user_id = session.get('uid')
+
+    if not logged_in_user_id:
+        return jsonify({"message": "ログインしていません"}), 401
+    
+    if not uid:
+        return jsonify({"message": "UID is required"}), 400
+
+    # user_ids の生成
+    user_ids = ','.join(map(str, [logged_in_user_id, uid]))
+    print(f"Generated user_ids string: {user_ids}")  # デバッグ用ログ
+
+    abstract = f"Chatroom for {name} at {address}"
+
+    try:
+        dbConnect.createChatroom(uid=generate_unique_id(), name=name, abstract=abstract, user_ids=user_ids)
+        return jsonify({"message": "チャットルームが作成されました"}), 200
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"message": "チャットルームの作成に失敗しました"}), 500
+
+def generate_unique_id():
+    return str(uuid.uuid4())
+
 
 # マッチングリクエスト一覧ページの表示
 @app.route('/request_list.html')

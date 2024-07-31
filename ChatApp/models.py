@@ -1,4 +1,5 @@
 import pymysql
+import json
 from util.DB import DB
 from flask import abort
 from flask_socketio import SocketIO
@@ -170,6 +171,31 @@ class dbConnect:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
 
+    # def getUsersByAddress(address):
+    #     try:
+    #         conn = DB.getConnection()  # データベース接続を取得
+    #         cur = conn.cursor()  # カーソルを作成
+    #         sql = "SELECT uid, username, address, greeting FROM users WHERE address = %s;"  # SQLクエリを定義
+    #         cur.execute(sql, (address,))  # クエリを実行
+    #         users = cur.fetchall()  # 結果を全て取得
+    #         # ユーザー情報を辞書形式に変換
+    #         user_list = [
+    #             {
+    #                 'uid': user[0],          # ユーザーID
+    #                 'username': user[1],    # ユーザー名
+    #                 'address': user[2],     # ユーザーの住所
+    #                 'greeting': user[3]     # 挨拶
+    #             }
+    #             for user in users
+    #         ]
+    #         return user_list  # ユーザー情報を返す
+    #     except Exception as e:
+    #         print(str(e) + 'が発生しています')  # エラーメッセージを出力
+    #         abort(500)  # HTTP 500エラーを返す
+    #     finally:
+    #         cur.close()  # カーソルを閉じる
+    #         conn.close()  # データベース接続を閉じる
+
     # 都道府県でユーザーを検索する
     def getUsersByAddress(address):
         try:
@@ -185,6 +211,55 @@ class dbConnect:
         finally:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
+
+    # チャットルームを作成する処理
+# def createChatroom(uid, name, abstract, user_ids):
+#     try:
+#         conn = DB.getConnection()  # データベース接続を取得
+#         cur = conn.cursor()  # カーソルを作成
+
+#         # チャットルームを作成するSQLクエリを定義
+#         sql = """
+#         INSERT INTO chat (uid, name, abstract, user_ids) 
+#         VALUES (%s, %s, %s, %s);
+#         """
+#         # SQLクエリを実行
+#         cur.execute(sql, (uid, name, abstract, user_ids))
+#         conn.commit()  # トランザクションをコミット
+
+#     except Exception as e:
+#         # エラーメッセージを出力
+#         print(f"エラーが発生しました: {str(e)}")
+#         # HTTP 500エラーを返す
+#         abort(500)  
+
+#     finally:
+#         # カーソルと接続を閉じる
+#         cur.close()  
+#         conn.close()  
+            
+    def createChatroom(uid, name, abstract, user_ids):
+        try:
+            conn = DB.getConnection()  # データベース接続を取得
+            cur = conn.cursor()  # カーソルを作成
+
+        # チャットルームを作成するSQLクエリを定義
+            sql = "INSERT INTO chat (uid, name, abstract, user_ids) VALUES (%s, %s, %s, %s);"
+        
+        # SQLクエリを実行
+            cur.execute(sql, (uid, name, abstract, user_ids))
+            conn.commit()  # トランザクションをコミット
+
+        except Exception as e:
+            # エラーメッセージを出力
+            print(f"エラーが発生しました: {str(e)}")
+            # HTTP 500エラーを返す
+            abort(500)  
+
+        finally:
+            # カーソルと接続を閉じる
+            cur.close()  
+            conn.close()
 
     # uidに紐づくメッセージを削除する処理
     # def deleteMessage(message_id):

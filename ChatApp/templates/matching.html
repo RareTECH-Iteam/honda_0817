@@ -177,6 +177,8 @@
     </div>
 
     <script>
+        let selectedUser = {};  // 選択されたユーザー情報を保持するための変数
+
         async function search() {
             const address = document.getElementById('address-select').value;
             if (address) {
@@ -216,8 +218,17 @@
                         <span>${user.name}</span>
                         <span>${user.address}</span>
                         <span>${user.greeting}</span>
+                        <span>UID: ${user.uid}</span>  <!-- UIDの表示 (修正) -->
                     `;
-                    userDiv.onclick = () => showPopup(user.name, user.address, user.greeting);
+                    userDiv.onclick = () => {
+                        selectedUser = {
+                            uid: user.uid,  // UIDを追加 (修正)
+                            name: user.name,
+                            address: user.address,
+                            greeting: user.greeting
+                        };
+                        showPopup(selectedUser);
+                    };
                     resultsDiv.appendChild(userDiv);
                 });
             } else {
@@ -225,8 +236,8 @@
             }
         }
 
-        function showPopup(name, address, greeting) {
-            document.getElementById('popup-text').innerText = `${name} (${address}) とのルームを作成しますか？`;
+        function showPopup(user) {
+            document.getElementById('popup-text').innerText = `${user.name} (${user.address}) とのルームを作成しますか？ UID: ${user.uid}`;  // UIDをポップアップに表示 (修正)
             document.getElementById('popup').style.display = 'flex';
         }
 
@@ -234,9 +245,34 @@
             document.getElementById('popup').style.display = 'none';
         }
 
-        function create() {
-            window.location.href = "{{ url_for('chat') }}";  // チャットページへの遷移
+        async function create() {
+            try {
+                const uid = selectedUser.uid;  // 修正: `id` から `uid` に変更
+                console.log('User UID:', uid); // デバッグ用ログ
+
+                const response = await fetch('/create_chatroom', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: selectedUser.name,
+                        address: selectedUser.address,
+                        uid: uid  // 修正: `user_ids` から `uid` に変更
+                    }),
+                });
+
+                if (response.ok) {
+                    window.location.href = "{{ url_for('chat') }}";  // チャットページへの遷移
+                } else {
+                    alert('チャットルームの作成に失敗しました');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('エラーが発生しました');
+            }
         }
     </script>
 </body>
 </html>
+
