@@ -4,9 +4,6 @@ from datetime import timedelta
 import hashlib
 import uuid
 import re
-# from flask_socketio import SocketIO, emit
-# import mysql.connector
-# from mysql.connector import Error
 import os
 from models import dbConnect
 
@@ -14,8 +11,6 @@ from models import dbConnect
 app = Flask(__name__)
 app.secret_key = uuid.uuid4().hex
 app.permanent_session_lifetime = timedelta(days=7)  # セッションの有効期限を7日に変更
-# Socket.IO の設定
-# socketio = SocketIO(app)
 
 # 新規会員登録ページの表示
 @app.route('/signup')
@@ -111,21 +106,16 @@ def profile_edit():
     if uid is None:
         return redirect('/login')
 
-    if request.method == 'POST':
-        # POSTリクエストの場合、フォームからデータを取得して更新処理を行う
+    if request.method == 'POST': # POSTリクエストの場合、フォームからデータを取得して更新処理を行う
         username = request.form.get('username')
         email = request.form.get('email')
         address = request.form.get('address')
         greeting = request.form.get('greeting')
 
-        # データベースを更新
-        dbConnect.updateUser(uid, username, email, address, greeting)
-        
-        # 更新後のプロフィール画面ページにリダイレクト
-        return redirect('/profile')
+        dbConnect.updateUser(uid, username, email, address, greeting) # データベースを更新
+        return redirect('/profile') # 更新後のプロフィール画面ページにリダイレクト
     else:
-        # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
-        user = dbConnect.getUserByUid(uid)
+        user = dbConnect.getUserByUid(uid) # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
         return render_template('profile_edit.html', user=user)
 
 # ホーム画面からchat_listページに画面遷移
@@ -144,7 +134,7 @@ def chat_list():
             chatlist.append(channel)
     return render_template('chat_list.html', chat_rooms=chatlist)
 
-# チャット画面からGETとPOSTの処理を実装 追加7/28夜間追加
+# チャット画面からGETとPOSTの処理を実装 追加7/28夜に追加
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
     uid = session.get("uid")
@@ -154,22 +144,19 @@ def chat():
     chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
     if chat_id:
         if request.method == 'GET':
-            # メッセージの取得
-            messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
+            messages = dbConnect.getMessagesByChatRoom(uid, chat_id) # メッセージの取得
             return render_template('chat.html', chat_id=chat_id, messages=messages)
 
         if request.method == 'POST':
-            # メッセージの投稿
-            message = request.form.get('message')
+            message = request.form.get('message') # メッセージの投稿
             if message:
                 dbConnect.createMessage(uid, chat_id, message)
                 return redirect(f'/chat?room_id={chat_id}')
     else:
-        # チャットIDが指定されていない場合、チャットルームの一覧を表示
-        chats = dbConnect.getChatRoomList(uid)
+        chats = dbConnect.getChatRoomList(uid) # チャットIDが指定されていない場合、チャットルームの一覧を表示
         return render_template('chat_list.html', chats=chats)
 
-# 「matching」URLのエンドポイント　7/31に処理を新規追加した
+# マッチング画面からGETとPOSTの処理を実装 7/31に処理を新規追加した
 @app.route('/matching', methods=['GET', 'POST'])
 def matching():
     if request.method == 'POST':
@@ -187,60 +174,7 @@ def matching():
     else:
         return render_template('matching.html')
 
-# 「matching」URLのエンドポイント
-# @app.route('/matching', methods=['GET', 'POST'])
-# def matching():
-#     if request.method == 'POST':
-#         address = request.json.get('address')
-#         if address:
-#             users = dbConnect.getUsersByAddress(address)  # データを取得
-#             # デバッグ用に返すデータの形式を確認
-#             # print('Retrieved users:', users)
-#             # 各ユーザーが辞書であることを確認し、キーを使用してアクセス
-#             return jsonify([{
-#                 'name': user.get('username'),       # ユーザー名
-#                 'address': user.get('address'),    # ユーザーの住所
-#                 'greeting': user.get('greeting')    # 挨拶
-#             } for user in users])
-#         return jsonify({'error': '住所が指定されていません'}), 400
-#     else:
-#         return render_template('matching.html')
-
-# チャットルームを作成するエンドポイント
-# @app.route('/create_chatroom', methods=['POST'])
-# def create_chatroom():
-#     uid = session.get("uid")
-#     if uid is None:
-#         return jsonify({'error': 'ログインが必要です'}), 403
-
-#     data = request.json
-#     name = data.get('name')
-#     address = data.get('address')
-#     user_ids = data.get('user_ids', '')  # ここでデフォルト値として空文字列を設定
-
-#     # デバッグ出力
-#     print(f"Received data: name={name}, address={address}, user_ids={user_ids}")
-
-#     if not name or not address or not user_ids:
-#         return jsonify({'error': '名前、住所、およびユーザーIDが必要です'}), 400
-
-#     # user_ids がカンマ区切りの文字列であることを確認し、リストに変換
-#     user_ids_list = user_ids.split(',')
-#     if uid not in user_ids_list:
-#         user_ids_list.append(uid)  # ログインユーザーの UID を追加
-#     user_ids_string = ','.join(user_ids_list)  # 再びカンマ区切りの文字列に変換
-
-#     try:
-#         chatroom_id = dbConnect.createChatroom(uid, name, address, user_ids)
-
-#         if chatroom_id:
-#             return jsonify({'success': True, 'chatroom_id': chatroom_id}), 200
-#         else:
-#             return jsonify({'error': 'チャットルームの作成に失敗しました'}), 500
-#     except Exception as e:
-#         print(f"エラーが発生しました: {str(e)}")
-#         return jsonify({'error': 'サーバーエラー'}), 500
-
+# マッチング画面から派生してPOSTの処理を実装 7/31に処理を新規追加した
 @app.route('/create_chatroom', methods=['POST'])
 def create_chatroom():
     data = request.get_json()
@@ -251,19 +185,15 @@ def create_chatroom():
     uid = data.get('uid')  # 修正: フロントエンドから送信された uid を取得
     
     print(f"Received UID: {uid}")  # デバッグ用ログ
-
     logged_in_user_id = session.get('uid')
 
     if not logged_in_user_id:
         return jsonify({"message": "ログインしていません"}), 401
-    
     if not uid:
         return jsonify({"message": "UID is required"}), 400
 
-    # user_ids の生成
-    user_ids = ','.join(map(str, [logged_in_user_id, uid]))
+    user_ids = ','.join(map(str, [logged_in_user_id, uid])) # user_ids の生成
     print(f"Generated user_ids string: {user_ids}")  # デバッグ用ログ
-
     abstract = f"Chatroom for {name} at {address}"
 
     try:
@@ -273,15 +203,16 @@ def create_chatroom():
         print(f"Error: {str(e)}")
         return jsonify({"message": "チャットルームの作成に失敗しました"}), 500
 
+# 直前の処理で必要な関数を定義
 def generate_unique_id():
     return str(uuid.uuid4())
-
 
 # マッチングリクエスト一覧ページの表示
 @app.route('/request_list.html')
 def request_list():
     return render_template('request_list.html')
 
+# ログアウトした際の画面遷移としてログイン画面に戻る
 @app.route('/logout')
 def logout():
     return render_template('registration/login.html')

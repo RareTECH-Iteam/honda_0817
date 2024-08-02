@@ -2,10 +2,6 @@ import pymysql
 import json
 from util.DB import DB
 from flask import abort
-from flask_socketio import SocketIO
-
-# FlaskアプリケーションとSocketIOの設定
-# socketio = SocketIO()  # Flaskアプリケーションと一緒にSocketIOを初期化します
 
 class dbConnect:
     # ユーザー情報の追加
@@ -118,7 +114,6 @@ class dbConnect:
             conn = DB.getConnection()
             cur = conn.cursor()
             sql = "SELECT * from messages WHERE cid = %s;"
-            # sql = "SELECT id,u.uid, username, message FROM messages AS m INNER JOIN users AS u ON m.uid = u.uid WHERE cid = %s;"
             cur.execute(sql, (cid))
             messages = cur.fetchall()
             return messages
@@ -136,8 +131,6 @@ class dbConnect:
             sql = "INSERT INTO messages(uid, cid, message) VALUES(%s, %s, %s)"
             cur.execute(sql, (uid, cid, message))
             conn.commit()
-            # メッセージ作成後にSocket.IOで通知を送信
-            # socketio.emit('new_message', {'uid': uid, 'cid': cid, 'message': message})
         except Exception as e:
             print(str(e) + 'が発生しています')
             abort(500)
@@ -149,52 +142,19 @@ class dbConnect:
         try:
             conn = DB.getConnection()  # データベース接続を取得
             cur = conn.cursor()  # カーソルを作成
-
-            # SQLクエリを定義（uidがある場合とない場合で条件を変更）
             if uid is not None:
                 sql = "SELECT * FROM messages WHERE cid=%s ORDER BY created_at;"
                 params = (chat_id)
-            # else:
-            #     sql = "SELECT * FROM messages WHERE cid=%s ORDER BY created_at;"
-            #     params = (chat_id,)
-
             cur.execute(sql, params)  # クエリを実行
             messages = cur.fetchall()  # 結果を全て取得
             print(messages, '160')
             return messages  # メッセージ一覧を返す
-
         except Exception as e:
             print(f"エラー: {str(e)}")  # エラーメッセージを出力
             abort(500)  # HTTP 500エラーを返す
-
         finally:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
-
-    # def getUsersByAddress(address):
-    #     try:
-    #         conn = DB.getConnection()  # データベース接続を取得
-    #         cur = conn.cursor()  # カーソルを作成
-    #         sql = "SELECT uid, username, address, greeting FROM users WHERE address = %s;"  # SQLクエリを定義
-    #         cur.execute(sql, (address,))  # クエリを実行
-    #         users = cur.fetchall()  # 結果を全て取得
-    #         # ユーザー情報を辞書形式に変換
-    #         user_list = [
-    #             {
-    #                 'uid': user[0],          # ユーザーID
-    #                 'username': user[1],    # ユーザー名
-    #                 'address': user[2],     # ユーザーの住所
-    #                 'greeting': user[3]     # 挨拶
-    #             }
-    #             for user in users
-    #         ]
-    #         return user_list  # ユーザー情報を返す
-    #     except Exception as e:
-    #         print(str(e) + 'が発生しています')  # エラーメッセージを出力
-    #         abort(500)  # HTTP 500エラーを返す
-    #     finally:
-    #         cur.close()  # カーソルを閉じる
-    #         conn.close()  # データベース接続を閉じる
 
     # 都道府県でユーザーを検索する
     def getUsersByAddress(address):
@@ -212,65 +172,17 @@ class dbConnect:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
 
-    # チャットルームを作成する処理
-# def createChatroom(uid, name, abstract, user_ids):
-#     try:
-#         conn = DB.getConnection()  # データベース接続を取得
-#         cur = conn.cursor()  # カーソルを作成
-
-#         # チャットルームを作成するSQLクエリを定義
-#         sql = """
-#         INSERT INTO chat (uid, name, abstract, user_ids) 
-#         VALUES (%s, %s, %s, %s);
-#         """
-#         # SQLクエリを実行
-#         cur.execute(sql, (uid, name, abstract, user_ids))
-#         conn.commit()  # トランザクションをコミット
-
-#     except Exception as e:
-#         # エラーメッセージを出力
-#         print(f"エラーが発生しました: {str(e)}")
-#         # HTTP 500エラーを返す
-#         abort(500)  
-
-#     finally:
-#         # カーソルと接続を閉じる
-#         cur.close()  
-#         conn.close()  
-            
+    # マッチング成功後に1対1のチャットルームを作成する
     def createChatroom(uid, name, abstract, user_ids):
         try:
             conn = DB.getConnection()  # データベース接続を取得
             cur = conn.cursor()  # カーソルを作成
-
-        # チャットルームを作成するSQLクエリを定義
             sql = "INSERT INTO chat (uid, name, abstract, user_ids) VALUES (%s, %s, %s, %s);"
-        
-        # SQLクエリを実行
             cur.execute(sql, (uid, name, abstract, user_ids))
             conn.commit()  # トランザクションをコミット
-
         except Exception as e:
-            # エラーメッセージを出力
             print(f"エラーが発生しました: {str(e)}")
-            # HTTP 500エラーを返す
             abort(500)  
-
         finally:
-            # カーソルと接続を閉じる
             cur.close()  
             conn.close()
-
-    # uidに紐づくメッセージを削除する処理
-    # def deleteMessage(message_id):
-    #     try:
-    #         conn = DB.getConnection()
-    #         cur = conn.cursor()
-    #         sql = "DELETE FROM messages WHERE id=%s;"
-    #         cur.execute(sql, (message_id))
-    #         conn.commit()
-    #     except Exception as e:
-    #         print(e + 'が発生しています')
-    #         abort(500)
-    #     finally:
-    #         cur.close()
