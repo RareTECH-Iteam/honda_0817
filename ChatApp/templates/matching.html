@@ -263,7 +263,7 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = "{{ url_for('chat') }}";  // チャットページへの遷移
+                    window.location.href = "{{ url_for('chat_list') }}";  // チャットページへの遷移
                 } else {
                     alert('チャットルームの作成に失敗しました');
                 }

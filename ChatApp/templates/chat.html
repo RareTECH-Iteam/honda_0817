@@ -124,32 +124,38 @@
             </form>
         </div>
     </div>
-
-    <!-- WebSocket Script -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
     <script>
-        const socket = io.connect('http://localhost:5000');
-        const input = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendMessageButton');
-        const messages = document.getElementById('messages');
+        const ws = new WebSocket(`ws://${process.env.REACT_APP_WEBSOCKET_SERVER_ADDRESS}`);
 
-        sendButton.addEventListener('click', function() {
-            if (input.value) {
-                socket.emit('chat message', { message: input.value });
-                input.value = '';
-            }
-        });
+        ws.onopen = function() {
+            console.log('WebSocket connected');
+        };
 
-        socket.on('chat message', function(data) {
-            const item = document.createElement('li');
-            item.innerHTML = `
-                <span class="message-user">${data.uid}</span>
-                <p class="message-content">${data.message}</p>
-                <span class="message-time">${new Date().toLocaleString()}</span>
+        ws.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            const messagesList = document.querySelector('.messages');
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <span class="message-user">${message.uid}</span>
+                <p class="message-content">${message.message}</p>
+                <span class="message-time">${new Date(message.created_at).toLocaleString()}</span>
             `;
-            messages.appendChild(item);
-            messages.scrollTop = messages.scrollHeight;
+            messagesList.appendChild(listItem);
+            messagesList.scrollTop = messagesList.scrollHeight; // スクロールを下に移動
+        };
+
+        ws.onclose = function() {
+            console.log('WebSocket closed');
+        };
+
+        const messageForm = document.querySelector('.message-form');
+        messageForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const messageInput = document.querySelector('.message-form input[type="text"]');
+            const message = messageInput.value;
+            messageInput.value = '';
+            ws.send(JSON.stringify({ message: message })); // メッセージを送信
         });
-    </script> -->
+    </script>
 </body>
 </html>
