@@ -180,96 +180,96 @@
         let selectedUser = {};  // 選択されたユーザー情報を保持するための変数
 
         async function search() {
-            const address = document.getElementById('address-select').value;
-            if (address) {
+            const address = document.getElementById('address-select').value; // 住所の入力フィールドの値を取得
+            if (address) { // 住所が入力されているかチェック
                 try {
-                    const response = await fetch('/matching', {
-                        method: 'POST',
+                    const response = await fetch('/matching', { // サーバーにPOSTリクエストを送信してマッチングを行う
+                        method: 'POST', // リクエストのメソッドをPOSTに設定
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json', // リクエストのデータ形式をJSONに指定
                         },
-                        body: JSON.stringify({ address: address }),
+                        body: JSON.stringify({ address: address }), // 住所をJSON形式でリクエストボディに含める
                     });
 
-                    if (response.ok) {
-                        const users = await response.json();
-                        displayResults(users);
+                    if (response.ok) { // レスポンスが正常かチェック
+                        const users = await response.json(); // レスポンスをJSONとして解析
+                        displayResults(users); // 検索結果を表示する関数を呼び出す
                     } else {
-                        alert('検索に失敗しました');
+                        alert('検索に失敗しました'); // レスポンスが正常でない場合にアラートを表示
                     }
                 } catch (error) {
-                    console.error('Error:', error);
-                    alert('エラーが発生しました');
+                    console.error('Error:', error); // エラー内容をコンソールに表示
+                    alert('エラーが発生しました'); // エラー発生時にアラートを表示
                 }
             } else {
-                alert('住所を選択してください');
+                alert('住所を選択してください'); // 住所が選択されていない場合にアラートを表示
             }
         }
 
         function displayResults(users) {
-            const resultsDiv = document.getElementById('results');
+            const resultsDiv = document.getElementById('results'); // 結果を表示する要素を取得
             resultsDiv.innerHTML = '';  // 既存の結果をクリア
-            if (users.length > 0) {
-                users.forEach(user => {
-                    const userDiv = document.createElement('div');
-                    userDiv.classList.add('icon-item');
+            if (users.length > 0) { // ユーザーが存在するかチェック
+                users.forEach(user => { // 各ユーザーに対して処理を実行
+                    const userDiv = document.createElement('div'); // 新しいdiv要素を作成
+                    userDiv.classList.add('icon-item'); // div要素にクラスを追加
                     userDiv.innerHTML = `
                         <div class="icon-circle"></div>
                         <span>${user.name}</span>
                         <span>${user.address}</span>
                         <span>${user.greeting}</span>
-                        <span>UID: ${user.uid}</span>  <!-- UIDの表示 (修正) -->
-                    `;
-                    userDiv.onclick = () => {
-                        selectedUser = {
-                            uid: user.uid,  // UIDを追加 (修正)
+                        <span>UID: ${user.uid}</span>
+                    `; // ユーザー情報を含むHTMLを作成してdivに挿入
+                    userDiv.onclick = () => { // divがクリックされたときに実行される処理を定義
+                        selectedUser = { // クリックされたユーザー情報を保持する
+                            uid: user.uid,
                             name: user.name,
                             address: user.address,
                             greeting: user.greeting
                         };
-                        showPopup(selectedUser);
+                        showPopup(selectedUser); // ポップアップを表示する関数を呼び出す
                     };
-                    resultsDiv.appendChild(userDiv);
+                    resultsDiv.appendChild(userDiv); // 結果表示エリアにユーザー情報を追加
                 });
             } else {
-                resultsDiv.innerHTML = '<p>該当するユーザーが見つかりませんでした。</p>';
+                resultsDiv.innerHTML = '<p>該当するユーザーが見つかりませんでした。</p>'; // ユーザーが見つからない場合にメッセージを表示
             }
         }
 
         function showPopup(user) {
-            document.getElementById('popup-text').innerText = `${user.name} (${user.address}) とのルームを作成しますか？ UID: ${user.uid}`;  // UIDをポップアップに表示 (修正)
-            document.getElementById('popup').style.display = 'flex';
+            document.getElementById('popup-text').innerText = `${user.name} (${user.address}) とのルームを作成しますか？ UID: ${user.uid}`;
+            document.getElementById('popup').style.display = 'flex'; // ポップアップを表示する
         }
 
         function cancel() {
-            document.getElementById('popup').style.display = 'none';
+            document.getElementById('popup').style.display = 'none'; // ポップアップを非表示にする
         }
 
         async function create() {
             try {
-                const uid = selectedUser.uid;  // 修正: `id` から `uid` に変更
+                const uid = selectedUser.uid;
                 console.log('User UID:', uid); // デバッグ用ログ
 
-                const response = await fetch('/create_chatroom', {
-                    method: 'POST',
+                const response = await fetch('/create_chatroom', { // サーバーにPOSTリクエストを送信してチャットルームを作成する
+                    method: 'POST', // リクエストのメソッドをPOSTに設定
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json', // リクエストのデータ形式をJSONに指定
                     },
-                    body: JSON.stringify({
+                    body: JSON.stringify({ // チャットルームの作成に必要なデータをリクエストボディに含める
                         name: selectedUser.name,
                         address: selectedUser.address,
-                        uid: uid  // 修正: `user_ids` から `uid` に変更
+                        uid: uid
                     }),
                 });
 
-                if (response.ok) {
-                    window.location.href = "{{ url_for('chat_list') }}";  // チャットページへの遷移
+                if (response.ok) { // レスポンスが正常かチェック
+                    window.location.href = "{{ url_for('chat_list') }}"; // チャットリストページへリダイレクト
                 } else {
-                    alert('チャットルームの作成に失敗しました');
+                    alert('チャットルームの作成に失敗しました'); // レスポンスが正常でない場合にアラートを表示
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('エラーが発生しました');
+                console.error('Error:', error); // エラー内容をコンソールに表示
+                alert('エラーが発生しました'); // エラー発生時にアラートを表示
             }
         }
     </script>

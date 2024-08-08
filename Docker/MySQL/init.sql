@@ -64,9 +64,6 @@ INSERT INTO users (uid, username, email, password, address, greeting) VALUES
 ('18', 'ハリス', 'harris@example.com', 'password19', '青森県', 'こんにちは、ハリスです。'),
 ('19', 'クラーク', 'clark@example.com', 'password20', '青森県', 'こんにちは、クラークです。');
 
-
-
-
 -- チャットルームのサンプル挿入
 -- INSERT INTO chat (uid, name, abstract, user_ids) VALUES
 -- ('1', 'アリスさんとボブさんのチャットルーム', 'アリスさんとボブさんのチャットルームです', '1,2'),

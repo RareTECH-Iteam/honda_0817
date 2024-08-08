@@ -207,11 +207,6 @@ def create_chatroom():
 def generate_unique_id():
     return str(uuid.uuid4())
 
-# マッチングリクエスト一覧ページの表示
-@app.route('/request_list.html')
-def request_list():
-    return render_template('request_list.html')
-
 # ログアウトした際の画面遷移としてログイン画面に戻る
 @app.route('/logout')
 def logout():

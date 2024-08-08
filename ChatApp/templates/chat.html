@@ -124,38 +124,5 @@
             </form>
         </div>
     </div>
-    <script>
-        const ws = new WebSocket(`ws://${process.env.REACT_APP_WEBSOCKET_SERVER_ADDRESS}`);
-
-        ws.onopen = function() {
-            console.log('WebSocket connected');
-        };
-
-        ws.onmessage = function(event) {
-            const message = JSON.parse(event.data);
-            const messagesList = document.querySelector('.messages');
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-                <span class="message-user">${message.uid}</span>
-                <p class="message-content">${message.message}</p>
-                <span class="message-time">${new Date(message.created_at).toLocaleString()}</span>
-            `;
-            messagesList.appendChild(listItem);
-            messagesList.scrollTop = messagesList.scrollHeight; // スクロールを下に移動
-        };
-
-        ws.onclose = function() {
-            console.log('WebSocket closed');
-        };
-
-        const messageForm = document.querySelector('.message-form');
-        messageForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const messageInput = document.querySelector('.message-form input[type="text"]');
-            const message = messageInput.value;
-            messageInput.value = '';
-            ws.send(JSON.stringify({ message: message })); // メッセージを送信
-        });
-    </script>
 </body>
 </html>
