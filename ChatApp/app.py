@@ -203,6 +203,18 @@ def matching():
 #         print(f"Error: {str(e)}")
 #         return jsonify({"message": "チャットルームの作成に失敗しました"}), 500
 
+# ログインユーザー名を取得するAPIエンドポイント
+@app.route('/get_logged_in_user', methods=['GET'])
+def get_logged_in_user():
+    logged_in_user_id = session.get('uid')
+    if not logged_in_user_id:
+        return jsonify({"message": "ログインしていません"}), 401
+    logged_in_username = dbConnect.getUsernameByUid(logged_in_user_id)
+    print(f"Logged in username: {logged_in_username}")  # デバッグ用ログ
+    if not logged_in_username:
+        return jsonify({"message": "ユーザー情報の取得に失敗しました"}), 500
+    return jsonify({"username": logged_in_username}), 200
+
 @app.route('/create_chatroom', methods=['POST'])
 def create_chatroom():
     data = request.get_json()

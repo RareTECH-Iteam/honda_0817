@@ -178,8 +178,28 @@
 
     <script>
         let selectedUser = {};  // 選択されたユーザー情報を保持するための変数
-        let loggedInUserName = {}; // サーバーからログインユーザー名をエスケープ処理して受け取る
+        let loggedInUserName = ""; // サーバーからログインユーザー名を取得
         console.log('Logged in User Name:', loggedInUserName); // デバッグ用ログ
+
+        async function fetchLoggedInUserName() {
+            try {
+                const response = await fetch('/get_logged_in_user'); // サーバーからログインユーザー名を取得
+                if (response.ok) {
+                    const data = await response.json();
+                    loggedInUserName = data.username; // サーバーからのレスポンスに一致するように修正
+                    console.log('Logged in User Name:', loggedInUserName); // デバッグ用ログ
+                } else {
+                    console.error('Failed to fetch logged-in username');
+                }
+            } catch (error) {
+                console.error('Error fetching logged-in username:', error);
+            }
+        }
+
+        fetchLoggedInUserName().then(() => {
+            console.log('Logged in User Name after fetch:', loggedInUserName); // 非同期処理が完了した後に確認
+        });
+
 
         async function search() {
             const address = document.getElementById('address-select').value; // 住所の入力フィールドの値を取得
@@ -249,6 +269,11 @@
 
         async function create() {
             try {
+                if (!loggedInUserName) {
+                    alert('ログインユーザー名が取得できませんでした。');
+                    return; // `loggedInUserName` が `undefined` の場合は処理を中断
+                }
+
                 const uid = selectedUser.uid;
 
                 const response = await fetch('/create_chatroom', { // サーバーにPOSTリクエストを送信してチャットルームを作成する
