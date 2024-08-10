@@ -6,6 +6,7 @@ import uuid
 import re
 import os
 from models import dbConnect
+from notification import sendLineNotify  # notification.py から関数をインポート
 
 # Flask アプリケーションのインスタンスを作成
 app = Flask(__name__)
@@ -249,6 +250,10 @@ def create_chatroom():
     try:
         dbConnect.createChatroom(uid=generate_unique_id(), name=name, abstract=abstract, user_ids=user_ids)
         # フロントにログインユーザー名とチャットルーム作成メッセージを送信
+
+        # チャットルームが作成された後に、LINE通知を送信
+        sendLineNotify()
+        
         return jsonify({
             "message": f"チャットルームが作成されました。",
             "logged_in_username": logged_in_username,
