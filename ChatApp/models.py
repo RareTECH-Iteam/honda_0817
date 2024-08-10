@@ -186,3 +186,19 @@ class dbConnect:
         finally:
             cur.close()  
             conn.close()
+
+    # uidに基づいてユーザー名を取得する
+    def getUsernameByUid(uid):
+        try:
+            conn = DB.getConnection()
+            cur = conn.cursor()
+            sql = "SELECT username FROM users WHERE uid=%s;"
+            cur.execute(sql, (uid,))
+            user = cur.fetchone()
+            return user['username'] if user else None
+        except Exception as e:
+            print(f"エラーが発生しました: {str(e)}")
+            abort(500)
+        finally:
+            cur.close()
+            conn.close()

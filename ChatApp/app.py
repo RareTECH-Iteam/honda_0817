@@ -175,6 +175,34 @@ def matching():
         return render_template('matching.html')
 
 # マッチング画面から派生してPOSTの処理を実装 7/31に処理を新規追加した
+# @app.route('/create_chatroom', methods=['POST'])
+# def create_chatroom():
+#     data = request.get_json()
+#     print(f"Received data: {data}")  # デバッグ用ログ
+
+#     name = data.get('name')
+#     address = data.get('address')
+#     uid = data.get('uid')  # 修正: フロントエンドから送信された uid を取得
+    
+#     print(f"Received UID: {uid}")  # デバッグ用ログ
+#     logged_in_user_id = session.get('uid')
+
+#     if not logged_in_user_id:
+#         return jsonify({"message": "ログインしていません"}), 401
+#     if not uid:
+#         return jsonify({"message": "UID is required"}), 400
+
+#     user_ids = ','.join(map(str, [logged_in_user_id, uid])) # user_ids の生成
+#     print(f"Generated user_ids string: {user_ids}")  # デバッグ用ログ
+#     abstract = f"Chatroom for {name} at {address}"
+
+#     try:
+#         dbConnect.createChatroom(uid=generate_unique_id(), name=name, abstract=abstract, user_ids=user_ids)
+#         return jsonify({"message": "チャットルームが作成されました"}), 200
+#     except Exception as e:
+#         print(f"Error: {str(e)}")
+#         return jsonify({"message": "チャットルームの作成に失敗しました"}), 500
+
 @app.route('/create_chatroom', methods=['POST'])
 def create_chatroom():
     data = request.get_json()
@@ -183,7 +211,7 @@ def create_chatroom():
     name = data.get('name')
     address = data.get('address')
     uid = data.get('uid')  # 修正: フロントエンドから送信された uid を取得
-    
+
     print(f"Received UID: {uid}")  # デバッグ用ログ
     logged_in_user_id = session.get('uid')
 
@@ -192,13 +220,28 @@ def create_chatroom():
     if not uid:
         return jsonify({"message": "UID is required"}), 400
 
-    user_ids = ','.join(map(str, [logged_in_user_id, uid])) # user_ids の生成
+    # ログインユーザーの名前を取得
+    logged_in_username = dbConnect.getUsernameByUid(logged_in_user_id)
+    selected_username = dbConnect.getUsernameByUid(uid)
+
+    print(f"Logged in username: {logged_in_username}")  # デバッグ用ログ
+    print(f"Selected in username: {selected_username}")  # デバッグ用ログ
+
+    if not logged_in_username or not selected_username:
+        return jsonify({"message": "ユーザー情報の取得に失敗しました"}), 500
+
+    user_ids = ','.join(map(str, [logged_in_user_id, uid]))  # user_ids の生成
     print(f"Generated user_ids string: {user_ids}")  # デバッグ用ログ
-    abstract = f"Chatroom for {name} at {address}"
+    abstract = f"Chatroom for {selected_username} at {address}"
 
     try:
         dbConnect.createChatroom(uid=generate_unique_id(), name=name, abstract=abstract, user_ids=user_ids)
-        return jsonify({"message": "チャットルームが作成されました"}), 200
+        # フロントにログインユーザー名とチャットルーム作成メッセージを送信
+        return jsonify({
+            "message": f"チャットルームが作成されました。",
+            "logged_in_username": logged_in_username,
+            "selected_username": selected_username
+        }), 200
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"message": "チャットルームの作成に失敗しました"}), 500

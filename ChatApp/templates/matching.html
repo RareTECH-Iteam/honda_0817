@@ -178,6 +178,8 @@
 
     <script>
         let selectedUser = {};  // 選択されたユーザー情報を保持するための変数
+        let loggedInUserName = {}; // サーバーからログインユーザー名をエスケープ処理して受け取る
+        console.log('Logged in User Name:', loggedInUserName); // デバッグ用ログ
 
         async function search() {
             const address = document.getElementById('address-select').value; // 住所の入力フィールドの値を取得
@@ -248,7 +250,6 @@
         async function create() {
             try {
                 const uid = selectedUser.uid;
-                console.log('User UID:', uid); // デバッグ用ログ
 
                 const response = await fetch('/create_chatroom', { // サーバーにPOSTリクエストを送信してチャットルームを作成する
                     method: 'POST', // リクエストのメソッドをPOSTに設定
@@ -256,13 +257,16 @@
                         'Content-Type': 'application/json', // リクエストのデータ形式をJSONに指定
                     },
                     body: JSON.stringify({ // チャットルームの作成に必要なデータをリクエストボディに含める
-                        name: selectedUser.name,
+                        name: `${loggedInUserName} & ${selectedUser.name}`, // 修正: `loggedInUserName.name` ではなく `loggedInUserName` に変更
                         address: selectedUser.address,
                         uid: uid
                     }),
                 });
 
                 if (response.ok) { // レスポンスが正常かチェック
+                    const result = await response.json();
+                    console.log('Logged in Username:', result.logged_in_username);  // ログインユーザー名をログ出力
+                    console.log('Selected Username:', result.selected_username);  // 選択されたユーザー名をログ出力
                     window.location.href = "{{ url_for('chat_list') }}"; // チャットリストページへリダイレクト
                 } else {
                     alert('チャットルームの作成に失敗しました'); // レスポンスが正常でない場合にアラートを表示
@@ -275,4 +279,3 @@
     </script>
 </body>
 </html>
-
