@@ -13,5 +13,5 @@ def sendLineNotify():
     else:
         print("通知の送信に失敗しました")
 
-# LINE通知を実行
-sendLineNotify()
+# LINE通知を実行:タロイモさんのご指摘通り、compose upすると実行されていた為、コメントアウト
+# sendLineNotify()
