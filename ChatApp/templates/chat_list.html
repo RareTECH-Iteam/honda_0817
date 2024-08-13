@@ -1,106 +1,74 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チャットルーム一覧</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            text-align: center;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: blue; /* ヘッダーのテキスト色を青に設定 */
-            cursor: pointer;
-        }
-
-        .chat-room-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .chat-room-list li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .chat-room-list li:last-child {
-            margin-bottom: 0;
-        }
-
-        .chat-room-list a {
-            text-decoration: none;
-            color: blue; /* リンクの色を青に設定 */
-            font-size: 18px;
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-        }
-
-        .chat-room-list a:hover {
-            text-decoration: underline;
-        }
-
-        .icon {
-            width: 50px; /* アイコンの幅 */
-            height: 50px; /* アイコンの高さ */
-            border-radius: 50%; /* 丸くする */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white; /* アイコンの文字色 */
-            font-size: 20px;
-            margin-right: 10px;
-            background-color: #007BFF; /* アイコンの背景色 */
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1 onclick="location.href='/'">チャット</h1>
-            <div class="user-icon">アイコン</div>
-        </header>
-        <h2>チャットルーム一覧</h2>
-        <ul class="chat-room-list">
-            {% if chat_rooms %}
-                {% for room in chat_rooms %}
-                <li>
-                    <a href="{{ url_for('chat', room_id=room['id']) }}" class="chat-link">
-                        <div class="icon"></div> {{ room['name'] }}
-                    </a>
-                </li>
-                {% endfor %}
-            {% else %}
-                <li>チャットルームがありません。</li>
-            {% endif %}
-        </ul>
+{% extends 'base.html' %} 
+{% block title %}
+    <title>Chatlist</title>
+{% endblock %} 
+{% block maincontent %}
+    <div class="col-sm-9 content mt-5 offset-sm-3">
+        <div class="row">
+            <h1>チャット一覧画面</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-11">
+                <hr>
+            </div>
+        </div>
+        {% if chat_rooms %}
+            {% for room in chat_rooms %}
+            <div class="row justify-content-center d-flex align-items-center mb-3">
+                <a href="{{ url_for('chat', room_id=room['id']) }}" class="chat-link">
+                    <div class="col-2">
+                        <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+                    </div>
+                    <div class="col-2">
+                        <p class="text-start mb-0">{{ room['name'] }}</p>
+                    </div>
+                    <div class="col-4">
+                        <p class="text-start mb-0">日本橋周辺でゆっくりできるカフェを知りたいです。</p>
+                    </div>
+                </a>
+            </div>
+            <!-- <li>
+                <a href="{{ url_for('chat', room_id=room['id']) }}" class="chat-link">
+                    <div class="icon"></div> {{ room['name'] }}
+                </a>
+            </li> -->
+            {% endfor %}
+        {% else %}
+            <li>チャットルームがありません。</li>
+        {% endif %}
+        <!-- <div class="row justify-content-center d-flex align-items-center mb-3">
+            <div class="col-2">
+                <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+            </div>
+            <div class="col-2">
+                <p class="text-start mb-0">TANAKA</p>
+            </div>
+            <div class="col-4">
+                <p class="text-start mb-0">日本橋周辺でゆっくりできるカフェを知りたいです。</p>
+            </div>
+        </div> -->
+        <!-- <div class="row justify-content-center d-flex align-items-center mb-3">
+            <div class="col-2">
+                <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+            </div>
+            <div class="col-2">
+                <p class="text-start mb-0">SATO</p>
+            </div>
+            <div class="col-4">
+                <p class="text-start mb-0">ありがとうございます。行ってみます。</p>
+            </div>
+        </div>
+        <div class="row justify-content-center d-flex align-items-center mb-3">
+            <div class="col-2">
+                <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+            </div>
+            <div class="col-2">
+                <p class="text-start mb-0">KOBAYASI</p>
+            </div>
+            <div class="col-4">
+                <p class="text-start mb-0">東京で最近できたおすすめのスポットありますか？</p>
+            </div>
+        </div> -->
+        
     </div>
-</body>
-</html>
+{% endblock %} 

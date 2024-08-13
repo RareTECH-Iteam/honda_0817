@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    {% block title %}
+        <!-- title-->
+    {% endblock %}
+    <!-- NES.cssの反映 -->
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <!--  スタイルシートの反映 -->
+    <link rel="stylesheet" type= "text/css" href="{{url_for('static',filename='css/registration.css')}}">
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <header class="header">
+          <img src="{{ url_for('static',filename='img/HelloFrom.png') }}" alt="logo"  class="header-logo"/>
+      </header>
+      {% block body %}
+        <!-- main-->
+      {% endblock %}
+    </div>
+  </body>
+</html>

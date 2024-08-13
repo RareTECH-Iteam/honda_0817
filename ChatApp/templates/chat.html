@@ -1,128 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チャットルーム {{ chat_id }}</title>
-    <style>
-        /* スタイルシートの設定 */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .messages {
-            list-style-type: none;
-            padding: 0;
-            height: 400px;
-            overflow-y: auto;
-        }
-        .messages li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-        }
-        .messages li:last-child {
-            border-bottom: none;
-        }
-        .message-user {
-            font-weight: bold;
-            margin-right: 10px;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-        .message-content {
-            margin: 5px 0;
-            background-color: #f4f4f4;
-            border-radius: 10px;
-            padding: 10px;
-            flex: 1;
-        }
-        .message-time {
-            font-size: 0.9em;
-            color: #999;
-            margin-left: 10px;
-        }
-        .message-form {
-            display: flex;
-            margin-top: 20px;
-        }
-        .message-form input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
-            outline: none;
-        }
-        .message-form button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-left: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-        }
-        .message-form button:hover {
-            background-color: #0056b3;
-        }
-        .exit-button {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .exit-button button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .exit-button button:hover {
-            background-color: #cc0000;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>チャットルーム {{ chat_id }}</h1>
-        <ul class="messages">
-            {% for message in messages %}
-            <li>
-                <span class="message-user">{{ message['uid'] }}</span>
-                <p class="message-content">{{ message['message'] }}</p>
-                <span class="message-time">{{ message['created_at'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-        <form class="message-form" method="post">
-            <input type="text" name="message" placeholder="Type your message here">
-            <button type="submit">送信</button>
-        </form>
-        <div class="exit-button">
-            <form method="get" action="{{ url_for('chat_list') }}">
-                <button type="submit">退出</button>
-            </form>
+{% extends 'base.html' %} 
+{% block title %}
+    <title>Chat</title>
+{% endblock %} 
+{% block maincontent %}
+    <div class="col-sm-9 content mt-5 offset-sm-3">
+        <div class="row fixed-top mx-0 justify-content-end chatHead z-2">
+            <div class="col-12 col-sm-9 bg-white border-bottom">
+                <div class="row">
+                    <div class="col-2 d-inline-flex mt-3 mb-2"><a class="nes-btn" href="{{ url_for('chat_list') }}">退出</a></div>
+                    <div class="col-10 d-flex align-items-center justify-content-center mt-3 mb-2"><p class="mb-0">チャットルーム {{ chat_id }</p></div>
+                </div>
+            </div>
         </div>
+        <div class="row">
+            <section class="message-list chatContent">
+                <!-- {% for message in messages %}
+                <li>
+                    <span class="message-user">{{ message['uid'] }}</span>
+                    <p class="message-content">{{ message['message'] }}</p>
+                    <span class="message-time">{{ message['created_at'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </li>
+                {% endfor %} -->
+                {% for message in messages %}
+                <section class="message -left d-flex justify-content-start"></section>
+                    <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+                    <span class="message-user">{{ message['uid'] }}</span>
+                    <div class="nes-balloon from-left">
+                        <p class="message-content">{{ message['message'] }}</p>
+                    </div>
+                    <span class="message-time">{{ message['created_at'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </section>
+                {% endfor %}
+            </section>
+        </div>
+        <form action="#" method="post">
+            <div class="row fixed-bottom mx-0 justify-content-end chatbox z-2">
+                <div class="nes-field col-12 col-sm-9 bg-white is-inline">
+                    <input type="text" id="chat_text" name="message" class="nes-input my-2" placeholder="Type your message here">
+                    <button type="submit" class="nes-btn is-primary">SEND</button>
+                </div>
+            </div>
+        </form>
     </div>
-</body>
-</html>
+{% endblock %}

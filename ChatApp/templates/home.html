@@ -1,91 +1,11 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チャット</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f9f9f9;
-        }
-        .container {
-            width: 300px;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header .left {
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .header .right {
-            text-align: right;
-        }
-        .header .right span {
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .header .right a {
-            display: block;
-            text-decoration: none;
-            color: #007BFF;
-            font-weight: bold;
-            margin-top: 5px;
-            padding: 5px;
-            background-color: #f0f0f0;
-            border-radius: 5px;
-        }
-        .header .right a:hover {
-            background-color: #ddd;
-        }
-        .menu {
-            margin-top: 20px;
-        }
-        .menu a {
-            display: block;
-            text-decoration: none;
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            margin: 10px 0;
-            text-align: center;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .menu a:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="left">チャット</div>
-            <div class="right">
-                <a href="{{ url_for('profile') }}">
-                    <span>アイコン</span>
-                </a>
-                <a href="{{ url_for('logout') }}">ログアウト</a>
-            </div>
-        </div>
-        <div class="menu">
-            <a href="{{ url_for('chat_list') }}">チャットルーム一覧</a>
-            <a href="{{ url_for('matching') }}">＋マッチング</a>
-        </div>
+{% extends 'base.html' %} 
+{% block title %}
+    <title>Home</title>
+{% endblock %} 
+{% block maincontent %}
+    <div class="col-sm-9 content mt-5 offset-sm-3">
+        <p>何かしらの画像</p>
+        <img src="https://picsum.photos/800/600" class="img-fluid" alt="メインビジュアル">
+        <img src="https://picsum.photos/800/600" class="img-fluid" alt="メインビジュアル">
     </div>
-</body>
-</html>
+{% endblock %} 

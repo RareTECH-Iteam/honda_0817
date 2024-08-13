@@ -1,179 +1,97 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新規ユーザー登録</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            width: 300px;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 20px;
-            text-align: center;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-top: 10px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input, select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        input[type="text"], input[type="email"], input[type="password"], select {
-            margin-bottom: 10px;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button[type="button"] {
-            background-color: #6c757d;
-        }
-
-        button:hover {
-            opacity: 0.8;
-        }
-
-        p {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #555;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>新規ユーザー登録</h2>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="flash-messages">
-              <ul>
-                {% for message in messages %}
-                  <li>{{ message }}</li>
-                {% endfor %}
-              </ul>
+{% extends 'registration/registration-base.html' %} 
+{% block title %}
+    <title>Signup</title>
+{% endblock %} 
+{% block body %}
+    <main class="main-content">
+        <img src="{{ url_for('static',filename='img/SIGNUP.png') }}" alt="signup"  class="mainContent-logo"/>
+        <form method="post" class="nes-field  form-wrapper"> 
+            <div class="form-Element">
+                <label for="username">ユーザー名</label>
+                <input type="text" name="username" id="username" class="nes-input">
             </div>
-          {% endif %}
-        {% endwith %}
-        <form method="post">
-            <label for="username">ユーザ名</label>
-            <input type="text" id="username" name="username" required>
-            
-            <label for="email">メールアドレス</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="password">パスワード</label>
-            <input type="password" id="password" name="password1" required>
-            
-            <label for="confirm-password">パスワード（確認）</label>
-            <input type="password" id="confirm-password" name="password2" required>
-            
-            <label for="address">居住地</label>
-            <select id="address" name="address" required>
-                <option value="">選択してください</option>
-                <option value="北海道">北海道</option>
-                <option value="青森県">青森県</option>
-                <option value="岩手県">岩手県</option>
-                <option value="宮城県">宮城県</option>
-                <option value="秋田県">秋田県</option>
-                <option value="山形県">山形県</option>
-                <option value="福島県">福島県</option>
-                <option value="茨城県">茨城県</option>
-                <option value="栃木県">栃木県</option>
-                <option value="群馬県">群馬県</option>
-                <option value="埼玉県">埼玉県</option>
-                <option value="千葉県">千葉県</option>
-                <option value="東京都">東京都</option>
-                <option value="神奈川県">神奈川県</option>
-                <option value="新潟県">新潟県</option>
-                <option value="富山県">富山県</option>
-                <option value="石川県">石川県</option>
-                <option value="福井県">福井県</option>
-                <option value="山梨県">山梨県</option>
-                <option value="長野県">長野県</option>
-                <option value="岐阜県">岐阜県</option>
-                <option value="静岡県">静岡県</option>
-                <option value="愛知県">愛知県</option>
-                <option value="三重県">三重県</option>
-                <option value="滋賀県">滋賀県</option>
-                <option value="京都府">京都府</option>
-                <option value="大阪府">大阪府</option>
-                <option value="兵庫県">兵庫県</option>
-                <option value="奈良県">奈良県</option>
-                <option value="和歌山県">和歌山県</option>
-                <option value="鳥取県">鳥取県</option>
-                <option value="島根県">島根県</option>
-                <option value="岡山県">岡山県</option>
-                <option value="広島県">広島県</option>
-                <option value="山口県">山口県</option>
-                <option value="徳島県">徳島県</option>
-                <option value="香川県">香川県</option>
-                <option value="愛媛県">愛媛県</option>
-                <option value="高知県">高知県</option>
-                <option value="福岡県">福岡県</option>
-                <option value="佐賀県">佐賀県</option>
-                <option value="長崎県">長崎県</option>
-                <option value="熊本県">熊本県</option>
-                <option value="大分県">大分県</option>
-                <option value="宮崎県">宮崎県</option>
-                <option value="鹿児島県">鹿児島県</option>
-                <option value="沖縄県">沖縄県</option>
-            </select>
-            
-            <label for="greeting">あいさつ</label>
-            <input type="text" id="greeting" name="greeting">
-            
-            <!-- <label for="img">アイコン</label>
-            <input type="text" id="img" name="img"> -->
-            <div class="buttons">
-                <button type="button" onclick="history.back()">戻る</button>
-                <button type="submit">登録</button>
+            <div class="form-Element">
+                <label for="email">メールアドレス</label>
+                <input type="email" name="email" id="email" class="nes-input">
+            </div>
+            <div class="form-Element">
+                <label for="password1">パスワード</label>
+                <input type="password" name="password1" id="password1" class="nes-input">
+            </div>
+            <div class="form-Element">
+                <label for="password2">パスワード（確認）</label>
+                <input type="password" name="password2" id="password2" class="nes-input">
+            </div>
+            <div class="form-Element nes-field">
+                <label for="address">居住地</label>
+                <div class="nes-select">
+                    <select required id="default_select">
+                        <option value="" disabled selected hidden>----</option>
+                        <option value="北海道">北海道</option>
+                        <option value="青森県">青森県</option>
+                        <option value="岩手県">岩手県</option>
+                        <option value="宮城県">宮城県</option>
+                        <option value="秋田県">秋田県</option>
+                        <option value="山形県">山形県</option>
+                        <option value="福島県">福島県</option>
+                        <option value="茨城県">茨城県</option>
+                        <option value="栃木県">栃木県</option>
+                        <option value="群馬県">群馬県</option>
+                        <option value="埼玉県">埼玉県</option>
+                        <option value="千葉県">千葉県</option>
+                        <option value="東京都">東京都</option>
+                        <option value="神奈川県">神奈川県</option>
+                        <option value="新潟県">新潟県</option>
+                        <option value="富山県">富山県</option>
+                        <option value="石川県">石川県</option>
+                        <option value="福井県">福井県</option>
+                        <option value="山梨県">山梨県</option>
+                        <option value="長野県">長野県</option>
+                        <option value="岐阜県">岐阜県</option>
+                        <option value="静岡県">静岡県</option>
+                        <option value="愛知県">愛知県</option>
+                        <option value="三重県">三重県</option>
+                        <option value="滋賀県">滋賀県</option>
+                        <option value="京都府">京都府</option>
+                        <option value="大阪府">大阪府</option>
+                        <option value="兵庫県">兵庫県</option>
+                        <option value="奈良県">奈良県</option>
+                        <option value="和歌山県">和歌山県</option>
+                        <option value="鳥取県">鳥取県</option>
+                        <option value="島根県">島根県</option>
+                        <option value="岡山県">岡山県</option>
+                        <option value="広島県">広島県</option>
+                        <option value="山口県">山口県</option>
+                        <option value="徳島県">徳島県</option>
+                        <option value="香川県">香川県</option>
+                        <option value="愛媛県">愛媛県</option>
+                        <option value="高知県">高知県</option>
+                        <option value="福岡県">福岡県</option>
+                        <option value="佐賀県">佐賀県</option>
+                        <option value="長崎県">長崎県</option>
+                        <option value="熊本県">熊本県</option>
+                        <option value="大分県">大分県</option>
+                        <option value="宮崎県">宮崎県</option>
+                        <option value="鹿児島県">鹿児島県</option>
+                        <option value="沖縄県">沖縄県</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-Element">
+                <label for="greeting">あいさつ</label>
+                <input type="text" name="greeting" id="greeting" class="nes-input">
+            </div>
+            <div class="form-Element button">
+                {% with messages = get_flashed_messages() %} {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %} {% endwith %}
+                <a class="nes-btn" href="{{ url_for('login') }}">ログイン画面</a>
+                <button type="submit" class="nes-btn is-primary">登録</button>
             </div>
         </form>
-        <p>・居住地は、プルダウンで入力</p>
-    </div>
-</body>
-</html>
+    </main>
+{% endblock %}

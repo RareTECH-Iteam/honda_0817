@@ -1,79 +1,41 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>プロフィール詳細</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            margin-bottom: 20px;
-            color: #5d5d5d;
-        }
-        .info {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .info div {
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #fafafa;
-            border-radius: 4px;
-        }
-        .info strong {
-            display: inline-block;
-            width: 80px;
-        }
-        .buttons {
-            display: flex;
-            justify-content: space-around;
-        }
-        .buttons button {
-            background: #007bff;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .buttons button:hover {
-            background: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>ユーザ情報</h1>
-        <div class="info">
-            <div><strong>ユーザー名:</strong> {{ user.username }}</div>
-            <div><strong>メールアドレス:</strong> {{ user.email }}</div>
-            <div><strong>居住地:</strong> {{ user.address }}</div>
-            <div><strong>あいさつ:</strong> {{ user.greeting }}</div>
+{% extends 'base.html' %} 
+{% block title %}
+    <title>Profile</title>
+{% endblock %} 
+{% block maincontent %}
+    <div class="col-sm-9 content mt-5 offset-sm-3">
+        <div class="row">
+            <h1 class="p-0">プロフィール画面</h1>
         </div>
-        <div class="buttons">
-            <button onclick="location.href='{{ url_for('home') }}'">戻る</button>
-            <button onclick="location.href='{{ url_for('profile_edit') }}'">編集</button>
+        <div class="row justify-content-center">
+            <div class="col-11">
+                <hr>
+            </div>
         </div>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <img src="https://github.com/mdo.png" alt="mdo" width="160" height="160" class="rounded-circle">
+            </div>
+            <div class="col-7">
+                <div class="row">
+                    <div class="col-3"><p class="text-start">ユーザ名</p></div>
+                    <div class="col-7"><p class="text-start"> {{ user.username }} </p></div>
+                </div>
+                <div class="row">
+                    <div class="col-3"><p class="text-start">メールアドレス</p></div>
+                    <div class="col-7"><p class="text-start"> {{ user.email }} </p></div>
+                </div>
+                <div class="row">
+                    <div class="col-3"><p class="text-start">居住地</p></div>
+                    <div class="col-7"><p class="text-start"> {{ user.address }} </p></div>
+                </div>
+                <div class="row">
+                    <div class="col-3"><p class="text-start">あいさつ文</p></div>
+                    <div class="col-7"><p class="text-start"> {{ user.greeting }} </p></div>    
+                </div>
+            </div>
+        </div>
+        <a class="nes-btn" href="{{ url_for('home') }}">ホーム画面</a>
+        <a class="nes-btn is-primary" href="{{ url_for('profile_edit') }}">変更</a>
     </div>
-</body>
-</html>
+{% endblock %} 

@@ -1,0 +1,102 @@
+/*-------------------------------------------
+	共通部分
+  -------------------------------------------*/
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /*  要素+padding+borderを含めて、widthで設定できるようにする*/
+  }
+
+  li {
+    list-style: none;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000000;
+  }
+/*-------------------------------------------
+  ページ全体
+  -------------------------------------------*/
+  .page-wrapper {
+    width: 100%; /*要素の幅*/
+    /*max-width: 1280px; /*要素の幅の最大値*/
+    margin: 0 auto;
+    min-height: 100vh; /*ブラウザ画面の高さを、高さの最小値とする*/
+    position: relative; /*相対位置*/
+    padding-bottom: 20px; /*footerの高さ*/
+    box-sizing: border-box; /*全て含めてmin-height:100vhに*/
+  }
+/*-------------------------------------------
+  ヘッダー
+  -------------------------------------------*/
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    width: 100%;
+    padding-left: 80px;
+  }
+  
+  .header-logo {
+    height: 24px;
+  }
+/*-------------------------------------------
+  メインコンテンツ
+  -------------------------------------------*/
+  .main-content {
+    display: flex; /*main-contentクラス(コンテナ(親要素))直下のdiv(子要素)を横並びにする*/
+    flex-direction: column; /*div(子要素)を縦並びにする*/
+    align-items: center;
+    gap: 40px;
+  }
+
+  .mainContent-logo {
+    height: 60px;
+  }
+
+  .button{
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+/*-------------------------------------------
+  フォーム
+  -------------------------------------------*/
+  .form-wrapper {
+    display: flex; /*form-wrapperクラス(コンテナ(親要素))直下の、form-Elementクラス(子要素)を横並びにする*/
+    flex-direction: column; /*form-Elementクラス(子要素)を縦並びにする*/
+    align-items: center; /*form-Elementクラス(子要素)を中央揃いにする*/
+    gap: 16px; /*form-Elementクラス(子要素)間の空白を指定*/
+  }
+
+  .form-Element{
+    width: 640px
+  }
+
+  .button{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+ 
+/*-------------------------------------------
+  フッター
+  -------------------------------------------*/
+  .footer {
+    width: 100%;
+    background-color: #808080;
+    color: #fff;
+    font-size: small;
+    padding: 0;
+    text-align: center;
+
+    position: absolute; /*絶対位置*/
+    bottom: 0; /*下に固定*/
+  }
+
+  footer p{
+    margin: 0;
+  }
