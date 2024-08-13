@@ -84,10 +84,10 @@
                         <label for="greeting" class="text-start">あいさつ文</label>
                         <textarea id="greeting" name="greeting" class="nes-textarea" rows="4" required>{{ user.greeting }}</textarea>
                     </div>
+                    <a class="nes-btn" href="{{ url_for('profile') }}">戻る</a>
+                    <button type="submit" class="nes-btn is-primary">変更</button>
                 </form>
             </div>
         </div>
-        <a class="nes-btn" href="{{ url_for('profile') }}">戻る</a>
-        <button type="submit" class="nes-btn is-primary">変更</button>
     </div>
 {% endblock %} 
