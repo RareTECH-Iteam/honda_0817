@@ -30,11 +30,11 @@
                 </ul>
             </div>
         </div>
-        <div class="row flex-grow-1 main-content">
+        <div class="row flex-grow-1 main-content z-2">
             <!-- サイドバー -->
             <div class="col-sm-3 sidebar d-none d-sm-block fixed-left">
-                <p><a href="{{ url_for('chat_list') }}">チャットルーム一覧</a></p>
-                <p><a href="{{ url_for('matching') }}">＋マッチング</a></p>
+                <p><a href="{{ url_for('chat_list') }}"><img src="{{ url_for('static',filename='img/CHATLIST.png') }}" alt="logo"  class="side-logo"/></a></p>
+                <p><a href="{{ url_for('matching') }}"><img src="{{ url_for('static',filename='img/MATCHING.png') }}" alt="logo"  class="side-logo"/></a></p>
                 <!-- <p>マッチング依頼</p> -->
             </div>
             {% block maincontent %}
@@ -42,9 +42,9 @@
             {% endblock %}
         </div>
         <!-- フッター -->
-        <div class="row footer-nav d-sm-none justify-content-center fixed-bottom m-0">
-            <div class="col"><a href="{{ url_for('chat_list') }}">チャットルーム一覧</a></div>
-            <div class="col"><a href="{{ url_for('matching') }}">＋マッチング</a></div>
+        <div class="row footer-nav d-sm-none justify-content-center fixed-bottom m-0 z-2">
+            <div class="col"><a href="{{ url_for('chat_list') }}"><img src="{{ url_for('static',filename='img/CHATLIST.png') }}" alt="logo"  class="side-logo"/></a></div>
+            <div class="col"><a href="{{ url_for('matching') }}"><img src="{{ url_for('static',filename='img/MATCHING.png') }}" alt="logo"  class="side-logo"/></a></div>
             <!-- <div class="col">マッチング依頼</div> -->
         </div>
     </div>

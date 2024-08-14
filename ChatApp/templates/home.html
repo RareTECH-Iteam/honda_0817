@@ -4,8 +4,7 @@
 {% endblock %} 
 {% block maincontent %}
     <div class="col-sm-9 content mt-5 offset-sm-3">
-        <p>何かしらの画像</p>
-        <img src="https://picsum.photos/800/600" class="img-fluid" alt="メインビジュアル">
-        <img src="https://picsum.photos/800/600" class="img-fluid" alt="メインビジュアル">
+        <a href="{{ url_for('chat_list') }}"><img src="{{ url_for('static',filename='img/chatlistHome.png') }}" alt="chatlist"  class="img-fluid"/></a>
+        <a href="{{ url_for('matching') }}"><img src="{{ url_for('static',filename='img/chatlistHome.png') }}" alt="chatlist"  class="img-fluid"/></a>
     </div>
 {% endblock %} 

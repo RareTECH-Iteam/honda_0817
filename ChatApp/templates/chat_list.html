@@ -14,61 +14,21 @@
         </div>
         {% if chat_rooms %}
             {% for room in chat_rooms %}
-            <div class="row justify-content-center d-flex align-items-center mb-3">
-                <a href="{{ url_for('chat', room_id=room['id']) }}" class="chat-link">
-                    <div class="col-2">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
-                    </div>
-                    <div class="col-2">
-                        <p class="text-start mb-0">{{ room['name'] }}</p>
-                    </div>
-                    <div class="col-4">
-                        <p class="text-start mb-0">日本橋周辺でゆっくりできるカフェを知りたいです。</p>
-                    </div>
-                </a>
+            <div class="row justify-content-center d-flex align-items-center mb-3 position-relative">
+                <a href="{{ url_for('chat', room_id=room['id']) }}" class="stretched-link"></a>
+                <div class="col-2">
+                    <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+                </div>
+                <div class="col-2">
+                    <p class="text-start mb-0">{{ room['name'] }}</p>
+                </div>
+                <div class="col-4">
+                    <p class="text-start mb-0">日本橋周辺でゆっくりできるカフェを知りたいです。</p>
+                </div>
             </div>
-            <!-- <li>
-                <a href="{{ url_for('chat', room_id=room['id']) }}" class="chat-link">
-                    <div class="icon"></div> {{ room['name'] }}
-                </a>
-            </li> -->
             {% endfor %}
         {% else %}
             <li>チャットルームがありません。</li>
         {% endif %}
-        <!-- <div class="row justify-content-center d-flex align-items-center mb-3">
-            <div class="col-2">
-                <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
-            </div>
-            <div class="col-2">
-                <p class="text-start mb-0">TANAKA</p>
-            </div>
-            <div class="col-4">
-                <p class="text-start mb-0">日本橋周辺でゆっくりできるカフェを知りたいです。</p>
-            </div>
-        </div> -->
-        <!-- <div class="row justify-content-center d-flex align-items-center mb-3">
-            <div class="col-2">
-                <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
-            </div>
-            <div class="col-2">
-                <p class="text-start mb-0">SATO</p>
-            </div>
-            <div class="col-4">
-                <p class="text-start mb-0">ありがとうございます。行ってみます。</p>
-            </div>
-        </div>
-        <div class="row justify-content-center d-flex align-items-center mb-3">
-            <div class="col-2">
-                <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
-            </div>
-            <div class="col-2">
-                <p class="text-start mb-0">KOBAYASI</p>
-            </div>
-            <div class="col-4">
-                <p class="text-start mb-0">東京で最近できたおすすめのスポットありますか？</p>
-            </div>
-        </div> -->
-        
     </div>
 {% endblock %} 

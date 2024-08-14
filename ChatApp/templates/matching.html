@@ -3,145 +3,79 @@
     <title>Matching</title>
 {% endblock %} 
 {% block maincontent %}
-    <div class="col-sm-9 content mt-5 offset-sm-3">
-        <div class="row mx-0 justify-content-end chatHead z-2">
-            <div class="col-12 col-sm-9 bg-white">
-                <div class="row mt-3">
-                    <h1>マッチング</h1>
-                </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-6">
-                        <div class="header">
-                        <select id="address-select">
-                            <option value="">旅行先を入力</option>
-                            <option value="北海道">北海道</option>
-                            <option value="青森県">青森県</option>
-                            <option value="岩手県">岩手県</option>
-                            <option value="宮城県">宮城県</option>
-                            <option value="秋田県">秋田県</option>
-                            <option value="山形県">山形県</option>
-                            <option value="福島県">福島県</option>
-                            <option value="茨城県">茨城県</option>
-                            <option value="栃木県">栃木県</option>
-                            <option value="群馬県">群馬県</option>
-                            <option value="埼玉県">埼玉県</option>
-                            <option value="千葉県">千葉県</option>
-                            <option value="東京都">東京都</option>
-                            <option value="神奈川県">神奈川県</option>
-                            <option value="新潟県">新潟県</option>
-                            <option value="富山県">富山県</option>
-                            <option value="石川県">石川県</option>
-                            <option value="福井県">福井県</option>
-                            <option value="山梨県">山梨県</option>
-                            <option value="長野県">長野県</option>
-                            <option value="岐阜県">岐阜県</option>
-                            <option value="静岡県">静岡県</option>
-                            <option value="愛知県">愛知県</option>
-                            <option value="三重県">三重県</option>
-                            <option value="滋賀県">滋賀県</option>
-                            <option value="京都府">京都府</option>
-                            <option value="大阪府">大阪府</option>
-                            <option value="兵庫県">兵庫県</option>
-                            <option value="奈良県">奈良県</option>
-                            <option value="和歌山県">和歌山県</option>
-                            <option value="鳥取県">鳥取県</option>
-                            <option value="島根県">島根県</option>
-                            <option value="岡山県">岡山県</option>
-                            <option value="広島県">広島県</option>
-                            <option value="山口県">山口県</option>
-                            <option value="徳島県">徳島県</option>
-                            <option value="香川県">香川県</option>
-                            <option value="愛媛県">愛媛県</option>
-                            <option value="高知県">高知県</option>
-                            <option value="福岡県">福岡県</option>
-                            <option value="佐賀県">佐賀県</option>
-                            <option value="長崎県">長崎県</option>
-                            <option value="熊本県">熊本県</option>
-                            <option value="大分県">大分県</option>
-                            <option value="宮崎県">宮崎県</option>
-                            <option value="鹿児島県">鹿児島県</option>
-                            <option value="沖縄県">沖縄県</option>
-                        </select>
-                        <button class="search-btn" onclick="search()">検索</button>
-                        </div>
-                        <!-- <form action="{{ url_for('matching') }}" method="post">
-                            <div class="nes-field">
-                                <div class="nes-select">
-                                    <select required id="address-select">
-                                        <option value="" disabled selected hidden>-----</option>
-                                        <option value="北海道">北海道</option>
-                                        <option value="青森県">青森県</option>
-                                        <option value="岩手県">岩手県</option>
-                                        <option value="宮城県">宮城県</option>
-                                        <option value="秋田県">秋田県</option>
-                                        <option value="山形県">山形県</option>
-                                        <option value="福島県">福島県</option>
-                                        <option value="茨城県">茨城県</option>
-                                        <option value="栃木県">栃木県</option>
-                                        <option value="群馬県">群馬県</option>
-                                        <option value="埼玉県">埼玉県</option>
-                                        <option value="千葉県">千葉県</option>
-                                        <option value="東京都">東京都</option>
-                                        <option value="神奈川県">神奈川県</option>
-                                        <option value="新潟県">新潟県</option>
-                                        <option value="富山県">富山県</option>
-                                        <option value="石川県">石川県</option>
-                                        <option value="福井県">福井県</option>
-                                        <option value="山梨県">山梨県</option>
-                                        <option value="長野県">長野県</option>
-                                        <option value="岐阜県">岐阜県</option>
-                                        <option value="静岡県">静岡県</option>
-                                        <option value="愛知県">愛知県</option>
-                                        <option value="三重県">三重県</option>
-                                        <option value="滋賀県">滋賀県</option>
-                                        <option value="京都府">京都府</option>
-                                        <option value="大阪府">大阪府</option>
-                                        <option value="兵庫県">兵庫県</option>
-                                        <option value="奈良県">奈良県</option>
-                                        <option value="和歌山県">和歌山県</option>
-                                        <option value="鳥取県">鳥取県</option>
-                                        <option value="島根県">島根県</option>
-                                        <option value="岡山県">岡山県</option>
-                                        <option value="広島県">広島県</option>
-                                        <option value="山口県">山口県</option>
-                                        <option value="徳島県">徳島県</option>
-                                        <option value="香川県">香川県</option>
-                                        <option value="愛媛県">愛媛県</option>
-                                        <option value="高知県">高知県</option>
-                                        <option value="福岡県">福岡県</option>
-                                        <option value="佐賀県">佐賀県</option>
-                                        <option value="長崎県">長崎県</option>
-                                        <option value="熊本県">熊本県</option>
-                                        <option value="大分県">大分県</option>
-                                        <option value="宮崎県">宮崎県</option>
-                                        <option value="鹿児島県">鹿児島県</option>
-                                        <option value="沖縄県">沖縄県</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" class="nes-btn is-primary" onclick="search()">検索</button>
-                        </form> -->
+    <div class="col-sm-9 content mt-5 offset-sm-3 z-1">
+        <div class="row">
+            <h1>+ マッチング</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-11">
+                <hr>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-2">
+            <div class="col-8 d-flex justify-content-center">
+                <div class="nes-field col-10">
+                    <div class="nes-select">
+                    <select id="address-select">
+                        <option value="" disabled selected hidden>-----</option>
+                        <option value="北海道">北海道</option>
+                        <option value="青森県">青森県</option>
+                        <option value="岩手県">岩手県</option>
+                        <option value="宮城県">宮城県</option>
+                        <option value="秋田県">秋田県</option>
+                        <option value="山形県">山形県</option>
+                        <option value="福島県">福島県</option>
+                        <option value="茨城県">茨城県</option>
+                        <option value="栃木県">栃木県</option>
+                        <option value="群馬県">群馬県</option>
+                        <option value="埼玉県">埼玉県</option>
+                        <option value="千葉県">千葉県</option>
+                        <option value="東京都">東京都</option>
+                        <option value="神奈川県">神奈川県</option>
+                        <option value="新潟県">新潟県</option>
+                        <option value="富山県">富山県</option>
+                        <option value="石川県">石川県</option>
+                        <option value="福井県">福井県</option>
+                        <option value="山梨県">山梨県</option>
+                        <option value="長野県">長野県</option>
+                        <option value="岐阜県">岐阜県</option>
+                        <option value="静岡県">静岡県</option>
+                        <option value="愛知県">愛知県</option>
+                        <option value="三重県">三重県</option>
+                        <option value="滋賀県">滋賀県</option>
+                        <option value="京都府">京都府</option>
+                        <option value="大阪府">大阪府</option>
+                        <option value="兵庫県">兵庫県</option>
+                        <option value="奈良県">奈良県</option>
+                        <option value="和歌山県">和歌山県</option>
+                        <option value="鳥取県">鳥取県</option>
+                        <option value="島根県">島根県</option>
+                        <option value="岡山県">岡山県</option>
+                        <option value="広島県">広島県</option>
+                        <option value="山口県">山口県</option>
+                        <option value="徳島県">徳島県</option>
+                        <option value="香川県">香川県</option>
+                        <option value="愛媛県">愛媛県</option>
+                        <option value="高知県">高知県</option>
+                        <option value="福岡県">福岡県</option>
+                        <option value="佐賀県">佐賀県</option>
+                        <option value="長崎県">長崎県</option>
+                        <option value="熊本県">熊本県</option>
+                        <option value="大分県">大分県</option>
+                        <option value="宮崎県">宮崎県</option>
+                        <option value="鹿児島県">鹿児島県</option>
+                        <option value="沖縄県">沖縄県</option>
+                    </select>
                     </div>
                 </div>
+                <button class="nes-btn is-primary" onclick="search()">検索</button>
             </div>
         </div>
         <div class="matchingContent">
             <div class="row justify-content-center d-flex align-items-center mb-3">
-                <div id="results" class="icon-list">
+                <div id="results">
                     <!-- 検索結果がここに表示されます -->
                 </div>
-                <!-- <div class="col-2">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
-                </div>
-                <div class="col-2">
-                    <p class="text-start mb-0">AAAA</p>
-                </div>
-                <div class="col-2">
-                    <p class="text-start mb-0">長崎県</p>
-                </div>
-                <div class="col-4">
-                    <p class="text-start mb-0">長崎市に住んでいます。美味しいちゃんぽん知ってます。</p>
-                </div> -->
             </div>
         </div>
         <!-- ポップアップ -->
@@ -216,11 +150,23 @@
                 const userDiv = document.createElement('div'); // 新しいdiv要素を作成
                 userDiv.classList.add('icon-item'); // div要素にクラスを追加
                 userDiv.innerHTML = `
-                    <div class="icon-circle"></div>
-                    <span>${user.name}</span>
-                    <span>${user.address}</span>
-                    <span>${user.greeting}</span>
-                    <span>UID: ${user.uid}</span>
+                    <div class="row justify-content-center d-flex align-items-center mb-3">
+                        <div class="col-2">
+                            <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+                        </div>
+                        <div class="col-2">
+                            <span class="text-start mb-0">${user.name}</span>
+                        </div>
+                        <div class="col-2">
+                            <span class="text-start mb-0">${user.address}</span>
+                        </div>
+                        <div class="col-2">
+                            <span class="text-start mb-0">${user.greeting}</span>
+                        </div>
+                        <div>
+                            <span class="d-none">UID: ${user.uid}</span>
+                        </div>
+                    </div>
                 `; // ユーザー情報を含むHTMLを作成してdivに挿入
                 userDiv.onclick = () => { // divがクリックされたときに実行される処理を定義
                     selectedUser = { // クリックされたユーザー情報を保持する
@@ -239,7 +185,7 @@
     }
 
     function showPopup(user) {
-        document.getElementById('popup-text').innerText = `${user.name} (${user.address}) とのルームを作成しますか？ UID: ${user.uid}`;
+        document.getElementById('popup-text').innerText = `${user.name} (${user.address}) とのルームを作成しますか？`;
         document.getElementById('popup').style.display = 'flex'; // ポップアップを表示する
     }
 

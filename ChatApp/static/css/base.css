@@ -36,6 +36,9 @@ html, body {
     padding: 20px;
     height: 100%;
 }
+.side-logo{
+    height: 12px;
+}
 .fixed-left {
     position: fixed;
     top: 56px;
