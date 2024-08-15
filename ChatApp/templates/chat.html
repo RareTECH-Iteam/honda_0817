@@ -4,11 +4,11 @@
 {% endblock %} 
 {% block maincontent %}
     <div class="col-sm-9 content mt-5 offset-sm-3">
-        <div class="row fixed-top mx-0 justify-content-end chatHead z-2">
+        <div class="row "> <!--fixed-top mx-0 justify-content-end chatHead z-2 -->
             <div class="col-12 col-sm-9 bg-white border-bottom">
                 <div class="row">
                     <div class="col-2 d-inline-flex mt-3 mb-2"><a class="nes-btn" href="{{ url_for('chat_list') }}">退出</a></div>
-                    <div class="col-10 d-flex align-items-center justify-content-center mt-3 mb-2"><p class="mb-0">チャットルーム {{ chat_id }</p></div>
+                    <div class="col-10 d-flex align-items-center justify-content-center mt-3 mb-2"><p class="mb-0">チャットルーム {{ chat_id }}</p></div>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 </li>
                 {% endfor %} -->
                 {% for message in messages %}
-                <section class="message -left d-flex justify-content-start"></section>
+                <section class="message -left d-flex justify-content-start">
                     <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
                     <span class="message-user">{{ message['uid'] }}</span>
                     <div class="nes-balloon from-left">

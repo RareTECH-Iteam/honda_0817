@@ -6,5 +6,6 @@
 /* 全てのCSSをまとめてエクスポート */
 @import "color.css";
 @import "base.css";
+@import "home.css";
 @import "chat.css";
 @import "matching.css";
