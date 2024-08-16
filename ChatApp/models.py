@@ -5,15 +5,15 @@ from flask import abort
 
 class dbConnect:
     # ユーザー情報の追加
-    def createUser(uid, username, email, password, address, greeting):
+    def createUser(uid, username, email, password, address, greeting, icon):
         try:
             conn = DB.getConnection()  # データベース接続を取得
             cur = conn.cursor()  # カーソルを作成
-            sql = "INSERT INTO users (uid, username, email, password, address, greeting) VALUES (%s, %s, %s, %s, %s, %s);"  # SQLクエリを定義
-            cur.execute(sql, (uid, username, email, password, address, greeting))  # クエリを実行
+            sql = "INSERT INTO users (uid, username, email, password, address, greeting, icon) VALUES (%s, %s, %s, %s, %s, %s, %s);"  # SQLクエリを定義 # iconカラムも追加する
+            cur.execute(sql, (uid, username, email, password, address, greeting, icon))  # クエリを実行
             conn.commit()  # トランザクションをコミット
         except Exception as e:
-            print(e + 'が発生しています')  # エラーメッセージを出力
+            print(str(e) + 'が発生しています')  # エラーメッセージを出力
             abort(500)  # HTTP 500エラーを返す
         finally:
             cur.close()  # カーソルを閉じる
@@ -49,12 +49,12 @@ class dbConnect:
             cur.close()
 
     # ユーザー情報の更新
-    def updateUser(uid, username, email, address, greeting):
+    def updateUser(uid, username, email, address, greeting, icon):
         try:
             conn = DB.getConnection()
             cur = conn.cursor()
-            sql = "UPDATE users SET username=%s, email=%s, address=%s, greeting=%s WHERE uid=%s;"
-            cur.execute(sql, (username, email, address, greeting, uid))
+            sql = "UPDATE users SET uid=%s username=%s, email=%s, address=%s, greeting=%s icon=%s WHERE ;"
+            cur.execute(sql, (uid, username, email, address, greeting, icon))
             conn.commit()
         except Exception as e:
             print(str(e) + 'が発生しました')
@@ -157,12 +157,12 @@ class dbConnect:
             conn.close()  # データベース接続を閉じる
 
     # 都道府県でユーザーを検索する
-    def getUsersByAddress(address):
+    def getUsersByAddress(address, uid): # 自分自身を除外するためにuid引数を追加
         try:
             conn = DB.getConnection()  # データベース接続を取得
             cur = conn.cursor()  # カーソルを作成
-            sql = "SELECT * FROM users WHERE address = %s;"  # SQLクエリを定義
-            cur.execute(sql, (address,))  # クエリを実行
+            sql = "SELECT * FROM users WHERE address = %s AND uid != %s;"  # SQLクエリを定義 # ここで本人のuidだけ!=で除外
+            cur.execute(sql, (address, uid))  # クエリを実行 # uidを追記
             users = cur.fetchall()  # 結果を全て取得
             return users  # ユーザー情報を返す
         except Exception as e:

@@ -24,13 +24,18 @@
                 {% for message in messages %}
                 <section class="message -left d-flex justify-content-start">
                     <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
-                    <span class="message-user">{{ message['uid'] }}</span>
+                    <span class="message-user d-none">{{ message['uid'] }}</span>
                     <div class="nes-balloon from-left">
                         <p class="message-content">{{ message['message'] }}</p>
                     </div>
                     <span class="message-time">{{ message['created_at'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
                 </section>
                 {% endfor %}
+                <section class="message -right d-flex justify-content-end">
+                    <div class="nes-balloon from-right">
+                      <p>メッセージありがとうございます。YAMADAです。</p>
+                    </div>
+                </section>
             </section>
         </div>
         <form action="#" method="post">

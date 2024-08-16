@@ -13,43 +13,86 @@ app = Flask(__name__)
 app.secret_key = uuid.uuid4().hex
 app.permanent_session_lifetime = timedelta(days=7)  # セッションの有効期限を7日に変更
 
-# 新規会員登録ページの表示
-@app.route('/signup')
+# # 新規会員登録ページの表示
+# @app.route('/signup')
+# def signup():
+#     return render_template('registration/signup.html')
+
+# # 新規会員登録の処理、フォームを送信するPOSTの処理を実装
+# @app.route('/signup', methods=['POST'])
+# def userSignup():
+#     username = request.form.get('username')
+#     email = request.form.get('email')
+#     password1 = request.form.get('password1')
+#     password2 = request.form.get('password2')
+#     address = request.form.get('address')
+#     greeting = request.form.get('greeting')
+#     icon = request.form.get('icon')
+
+#     pattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+
+#     if username == '' or email =='' or password1 == '' or password2 == '' or address == '' or greeting == '' or  icon =='':
+#         flash('空のフォームがあるようです')
+#     elif password1 != password2:
+#         flash('二つのパスワードの値が違っています')
+#     elif re.match(pattern, email) is None:
+#         flash('正しいメールアドレスの形式ではありません')
+#     else:
+#         uid = uuid.uuid4()
+#         # password = hashlib.sha256(password1.encode('utf-8')).hexdigest()
+#         password = password1  # local検証の為、一時的にハッシュ化しない
+#         DBuser = dbConnect.getUser(email) # メールアドレスを元にユーザー情報を検索する
+
+#         if DBuser != None:
+#             flash('既に登録されているようです')
+#         else:
+#             dbConnect.createUser(uid, username, email, password, address, greeting, icon) # ユーザー情報の追加
+#             UserId = str(uid)
+#             session['uid'] = UserId
+#             return redirect('/')
+#     return redirect('/signup')
+
+@app.route('/signup', methods=['GET', 'POST']) # POSTはユーザー情報の登録、GETはiconを取ってくる
 def signup():
-    return render_template('registration/signup.html')
+    if request.method == 'POST':
+        # POSTリクエストの処理：新規会員登録
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+        address = request.form.get('address')
+        greeting = request.form.get('greeting')
+        icon = request.form.get('icon')
 
-# 新規会員登録の処理、フォームを送信するPOSTの処理を実装
-@app.route('/signup', methods=['POST'])
-def userSignup():
-    username = request.form.get('username')
-    email = request.form.get('email')
-    password1 = request.form.get('password1')
-    password2 = request.form.get('password2')
-    address = request.form.get('address')
-    greeting = request.form.get('greeting')
+        pattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
 
-    pattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-
-    if username == '' or email =='' or password1 == '' or password2 == '' or address == '' or greeting == '':
-        flash('空のフォームがあるようです')
-    elif password1 != password2:
-        flash('二つのパスワードの値が違っています')
-    elif re.match(pattern, email) is None:
-        flash('正しいメールアドレスの形式ではありません')
-    else:
-        uid = uuid.uuid4()
-        # password = hashlib.sha256(password1.encode('utf-8')).hexdigest()
-        password = password1  # local検証の為、一時的にハッシュ化しない
-        DBuser = dbConnect.getUser(email) # メールアドレスを元にユーザー情報を検索する
-
-        if DBuser != None:
-            flash('既に登録されているようです')
+        if username == '' or email =='' or password1 == '' or password2 == '' or address == '' or greeting == '' or icon =='':
+            flash('空のフォームがあるようです')
+        elif password1 != password2:
+            flash('二つのパスワードの値が違っています')
+        elif re.match(pattern, email) is None:
+            flash('正しいメールアドレスの形式ではありません')
         else:
-            dbConnect.createUser(uid, username, email, password, address, greeting) # ユーザー情報の追加
-            UserId = str(uid)
-            session['uid'] = UserId
-            return redirect('/')
-    return redirect('/signup')
+            uid = uuid.uuid4()
+            # password = hashlib.sha256(password1.encode('utf-8')).hexdigest()
+            password = password1  # local検証の為、一時的にハッシュ化しない
+            DBuser = dbConnect.getUser(email) # メールアドレスを元にユーザー情報を検索する
+
+            if DBuser is not None:
+                flash('既に登録されているようです')
+            else:
+                dbConnect.createUser(uid, username, email, password, address, greeting, icon) # ユーザー情報の追加
+                UserId = str(uid)
+                session['uid'] = UserId
+                return redirect('/')
+        return redirect('/signup')
+    
+    else:
+        # GETリクエストの処理：サインアップページの表示
+        icon_path = os.path.join(app.static_folder, 'img/icon')
+        icons = os.listdir(icon_path)
+        return render_template('registration/signup.html', icons=icons)
+
 
 # ログインページの表示
 @app.route('/login')
@@ -79,16 +122,28 @@ def userLogin():
                 return redirect('/')
     return redirect('/login')
 
-# ①チャットルーム一覧、②＋マッチング、③マッチング依頼一覧画面を表示
+# # ①チャットルーム一覧、②＋マッチング、③マッチング依頼一覧画面を表示
+# @app.route('/')
+# def home():
+#     uid = session.get("uid")
+#     if uid is None:
+#         return redirect('/login')
+#     else:
+#         channels = dbConnect.getChatAll() # ①②③のすべてのチャットを取得
+#         channels = channels[::-1]  # スライスを使ってタプルを逆順にする
+#     return render_template('home.html', channels=channels, uid=uid)
+
 @app.route('/')
 def home():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
     else:
-        channels = dbConnect.getChatAll() # ①②③のすべてのチャットを取得
+        channels = dbConnect.getChatAll()  # ①②③のすべてのチャットを取得
         channels = channels[::-1]  # スライスを使ってタプルを逆順にする
-    return render_template('home.html', channels=channels, uid=uid)
+        user = dbConnect.getUserByUid(uid)  # ユーザー情報を取得
+    return render_template('home.html', channels=channels, uid=uid, user=user)
+
 
 # ホーム画面からプロフィール画面にページの遷移
 @app.route('/profile')
@@ -98,7 +153,7 @@ def profile():
         return redirect('/login')
     else:
         user = dbConnect.getUserByUid(uid)
-    return render_template('profile.html', user=user)
+        return render_template('profile.html', user=user)
 
 # プロフィール画面からユーザ情報の更新
 @app.route('/profile_edit', methods=['GET', 'POST'])
@@ -112,8 +167,9 @@ def profile_edit():
         email = request.form.get('email')
         address = request.form.get('address')
         greeting = request.form.get('greeting')
+        icon = request.form.get('icon')
 
-        dbConnect.updateUser(uid, username, email, address, greeting) # データベースを更新
+        dbConnect.updateUser(uid, username, email, address, greeting, icon) # データベースを更新
         return redirect('/profile') # 更新後のプロフィール画面ページにリダイレクト
     else:
         user = dbConnect.getUserByUid(uid) # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
@@ -160,16 +216,21 @@ def chat():
 # マッチング画面からGETとPOSTの処理を実装 7/31に処理を新規追加した
 @app.route('/matching', methods=['GET', 'POST'])
 def matching():
+    uid = session.get("uid") # uidを定義
+    if uid is None:
+       return redirect('/login')
+    
     if request.method == 'POST':
         address = request.json.get('address')
         if address:
-            users = dbConnect.getUsersByAddress(address)  # データを取得
+            users = dbConnect.getUsersByAddress(address, uid)  # データを取得 # uidを追記
             # 各ユーザーが辞書であることを確認し、キーを使用してアクセス
             return jsonify([{
                 'uid': user.get('uid'),            # ユーザーID (修正)
                 'name': user.get('username'),      # ユーザー名
                 'address': user.get('address'),    # ユーザーの住所
-                'greeting': user.get('greeting')   # 挨拶
+                'greeting': user.get('greeting'),   # 挨拶
+                'icon': user.get('icon')
             } for user in users])
         return jsonify({'error': '住所が指定されていません'}), 400
     else:
