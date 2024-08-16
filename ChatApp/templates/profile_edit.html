@@ -14,7 +14,7 @@
         </div>
         <div class="row">
             <div class="col-3">
-                <img src="https://github.com/mdo.png" alt="mdo" width="160" height="160" class="rounded-circle">
+                <img src="{{ url_for('static', filename='img/icon/' + user.icon) }}" alt="User Icon" width="160" height="160" class="rounded-circle">
             </div>
             <div class="col-9">
                 <form action="{{ url_for('profile_edit') }}" method="post">

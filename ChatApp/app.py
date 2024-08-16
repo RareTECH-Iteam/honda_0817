@@ -183,13 +183,14 @@ def chat_list():
         return redirect('/login')
 
     channellist = dbConnect.getChatRoom(uid)
+    user = dbConnect.getUserByUid(uid)
     chatlist = []
     for channel in channellist: 
         print(channel["user_ids"])
         user_numbers = channel["user_ids"].split(",")
         if uid in user_numbers:
             chatlist.append(channel)
-    return render_template('chat_list.html', chat_rooms=chatlist)
+    return render_template('chat_list.html', chat_rooms=chatlist, user=user)
 
 # チャット画面からGETとPOSTの処理を実装 追加7/28夜に追加
 @app.route('/chat', methods=['GET', 'POST'])
@@ -220,6 +221,7 @@ def matching():
     if uid is None:
        return redirect('/login')
     
+    user = dbConnect.getUserByUid(uid)
     if request.method == 'POST':
         address = request.json.get('address')
         if address:
@@ -234,7 +236,7 @@ def matching():
             } for user in users])
         return jsonify({'error': '住所が指定されていません'}), 400
     else:
-        return render_template('matching.html')
+        return render_template('matching.html', user=user)
 
 # マッチング画面から派生してPOSTの処理を実装 7/31に処理を新規追加した
 # @app.route('/create_chatroom', methods=['POST'])
