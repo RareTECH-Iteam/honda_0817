@@ -137,21 +137,21 @@ class dbConnect:
         finally:
             cur.close()
 
-    # uidに紐づくメッセージを取得
+    # メッセージとユーザー情報を結合してアイコン情報も取得する処理
     def getMessagesByChatRoom(uid, chat_id):
         try:
             conn = DB.getConnection()  # データベース接続を取得
-            cur = conn.cursor()  # カーソルを作成
-            if uid is not None:
-                sql = "SELECT * FROM messages WHERE cid=%s ORDER BY created_at;"
-                params = (chat_id)
+            cur = conn.cursor()
+            sql = "SELECT m.id, m.uid, m.cid, m.message, m.created_at, u.icon FROM messages m JOIN users u ON m.uid = u.uid WHERE m.cid = %s ORDER BY m.created_at;"
+            params = (chat_id,)  # パラメータはタプル形式
             cur.execute(sql, params)  # クエリを実行
             messages = cur.fetchall()  # 結果を全て取得
-            print(messages, '160')
             return messages  # メッセージ一覧を返す
+        
         except Exception as e:
             print(f"エラー: {str(e)}")  # エラーメッセージを出力
             abort(500)  # HTTP 500エラーを返す
+        
         finally:
             cur.close()  # カーソルを閉じる
             conn.close()  # データベース接続を閉じる
@@ -196,6 +196,33 @@ class dbConnect:
             cur.execute(sql, (uid,))
             user = cur.fetchone()
             return user['username'] if user else None
+        except Exception as e:
+            print(f"エラーが発生しました: {str(e)}")
+            abort(500)
+        finally:
+            cur.close()
+            conn.close()
+
+    def getUsersByChatRoom(chat_id):
+        try:
+            conn = DB.getConnection()
+            cur = conn.cursor()
+            sql = "SELECT user_ids FROM chat WHERE id=%s;" # チャットルームの user_ids を取得
+            cur.execute(sql, (chat_id,))
+            result = cur.fetchone()
+            if not result:
+                return []  # チャットIDが存在しない場合、空のリストを返す
+
+            user_ids = result['user_ids']
+            # user_ids をカンマで分割
+            user_ids_list = user_ids.split(',')
+            
+            # 各ユーザーを取得
+            placeholders = ','.join(['%s'] * len(user_ids_list))
+            sql = f"SELECT * FROM users WHERE uid IN ({placeholders});"
+            cur.execute(sql, user_ids_list)
+            users = cur.fetchall()
+            return users
         except Exception as e:
             print(f"エラーが発生しました: {str(e)}")
             abort(500)

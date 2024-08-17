@@ -207,25 +207,29 @@ def chat():
     uid = session.get("uid")
     if uid is None:
         return redirect('/login')
-    
+
     chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
     user = dbConnect.getUserByUid(uid)
-    
     if chat_id:
         if request.method == 'GET':
-            messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
-            for message in messages:
-                sender = dbConnect.getUserByUid(message['uid'])
-                message['icon'] = sender['icon']  # 各メッセージに送信者のアイコンを追加
-            return render_template('chat.html', chat_id=chat_id, messages=messages, user=user)
+            messages = dbConnect.getMessagesByChatRoom(uid, chat_id)  # メッセージの取得
+            chat_users = dbConnect.getUsersByChatRoom(chat_id)  # チャットルームに参加しているユーザーの取得
+            other_users = [u for u in chat_users if u['uid'] != uid]  # 他のユーザーを取得
+            if other_users:
+                selected_user = other_users[0]  # 1人目の他のユーザーを選択
+            else:
+                selected_user = None  # 他のユーザーがいない場合
+
+            return render_template('chat.html', chat_id=chat_id, messages=messages, user=user, selected_user=selected_user)
 
         if request.method == 'POST':
-            message = request.form.get('message')
+            message = request.form.get('message')  # メッセージの投稿
             if message:
                 dbConnect.createMessage(uid, chat_id, message)
-                return redirect(f'/chat?room_id={chat_id}')
+            return redirect(url_for('chat', room_id=chat_id))  # 正しいURLだけを渡す
+
     else:
-        chats = dbConnect.getChatRoomList(uid)
+        chats = dbConnect.getChatRoomList(uid)  # チャットIDが指定されていない場合、チャットルームの一覧を表示
         return render_template('chat_list.html', chats=chats, user=user)
 
 # マッチング画面からGETとPOSTの処理を実装 7/31に処理を新規追加した
