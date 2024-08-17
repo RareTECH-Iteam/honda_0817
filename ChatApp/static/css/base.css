@@ -36,6 +36,9 @@ html, body {
     padding: 20px;
     height: 100%;
 }
+.side-botton{
+    margin-top: 80px;
+}
 .side-logo{
     height: 12px;
 }

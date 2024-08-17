@@ -1,5 +1,5 @@
 # 構築や動作に必要なライブラリやモジュールをインポート
-from flask import Flask, request, redirect, render_template, session, flash, abort, jsonify
+from flask import Flask, request, redirect, render_template, session, flash, abort, jsonify, url_for
 from datetime import timedelta
 import hashlib
 import uuid
@@ -172,8 +172,13 @@ def profile_edit():
         dbConnect.updateUser(uid, username, email, address, greeting, icon) # データベースを更新
         return redirect('/profile') # 更新後のプロフィール画面ページにリダイレクト
     else:
-        user = dbConnect.getUserByUid(uid) # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
-        return render_template('profile_edit.html', user=user)
+        user = dbConnect.getUserByUid(uid)  # GETリクエストの場合、ユーザー情報を取得して編集ページを表示
+
+        # アイコン画像のリストを取得
+        icon_path = os.path.join(app.static_folder, 'img/icon')
+        icons = os.listdir(icon_path)
+
+        return render_template('profile_edit.html', user=user, icons=icons)
 
 # ホーム画面からchat_listページに画面遷移
 @app.route('/chat_list')
@@ -186,9 +191,13 @@ def chat_list():
     user = dbConnect.getUserByUid(uid)
     chatlist = []
     for channel in channellist: 
-        print(channel["user_ids"])
         user_numbers = channel["user_ids"].split(",")
         if uid in user_numbers:
+            # 自分以外のユーザーを特定
+            other_user_id = [u_id for u_id in user_numbers if u_id != uid][0]
+            # 相手ユーザーの情報を取得
+            other_user = dbConnect.getUserByUid(other_user_id)
+            channel["icon"] = url_for('static', filename=f'img/icon/{other_user.get("icon")}')
             chatlist.append(channel)
     return render_template('chat_list.html', chat_rooms=chatlist, user=user)
 
@@ -200,40 +209,45 @@ def chat():
         return redirect('/login')
     
     chat_id = request.args.get('room_id')  # URL パラメータからチャットIDを取得
+    user = dbConnect.getUserByUid(uid)
+    
     if chat_id:
         if request.method == 'GET':
-            messages = dbConnect.getMessagesByChatRoom(uid, chat_id) # メッセージの取得
-            return render_template('chat.html', chat_id=chat_id, messages=messages)
+            messages = dbConnect.getMessagesByChatRoom(uid, chat_id)
+            for message in messages:
+                sender = dbConnect.getUserByUid(message['uid'])
+                message['icon'] = sender['icon']  # 各メッセージに送信者のアイコンを追加
+            return render_template('chat.html', chat_id=chat_id, messages=messages, user=user)
 
         if request.method == 'POST':
-            message = request.form.get('message') # メッセージの投稿
+            message = request.form.get('message')
             if message:
                 dbConnect.createMessage(uid, chat_id, message)
                 return redirect(f'/chat?room_id={chat_id}')
     else:
-        chats = dbConnect.getChatRoomList(uid) # チャットIDが指定されていない場合、チャットルームの一覧を表示
-        return render_template('chat_list.html', chats=chats)
+        chats = dbConnect.getChatRoomList(uid)
+        return render_template('chat_list.html', chats=chats, user=user)
 
 # マッチング画面からGETとPOSTの処理を実装 7/31に処理を新規追加した
 @app.route('/matching', methods=['GET', 'POST'])
 def matching():
-    uid = session.get("uid") # uidを定義
+    uid = session.get("uid")  # uidを定義
     if uid is None:
-       return redirect('/login')
+        return redirect('/login')
     
     user = dbConnect.getUserByUid(uid)
     if request.method == 'POST':
         address = request.json.get('address')
         if address:
-            users = dbConnect.getUsersByAddress(address, uid)  # データを取得 # uidを追記
+            users = dbConnect.getUsersByAddress(address, uid)  # データを取得 (uidを追記)
             # 各ユーザーが辞書であることを確認し、キーを使用してアクセス
             return jsonify([{
-                'uid': user.get('uid'),            # ユーザーID (修正)
-                'name': user.get('username'),      # ユーザー名
-                'address': user.get('address'),    # ユーザーの住所
-                'greeting': user.get('greeting'),   # 挨拶
-                'icon': user.get('icon')
-            } for user in users])
+                'uid': u.get('uid'),            # ユーザーID
+                'name': u.get('username'),      # ユーザー名
+                'address': u.get('address'),    # ユーザーの住所
+                'greeting': u.get('greeting'),  # 挨拶
+                'icon': url_for('static', filename=f'img/icon/{u.get("icon")}')  # フルパスのアイコンURLを生成
+            } for u in users])  # ループ内の変数名を`u`に変更
         return jsonify({'error': '住所が指定されていません'}), 400
     else:
         return render_template('matching.html', user=user)

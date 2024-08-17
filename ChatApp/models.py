@@ -53,8 +53,8 @@ class dbConnect:
         try:
             conn = DB.getConnection()
             cur = conn.cursor()
-            sql = "UPDATE users SET uid=%s username=%s, email=%s, address=%s, greeting=%s icon=%s WHERE ;"
-            cur.execute(sql, (uid, username, email, address, greeting, icon))
+            sql = "UPDATE users SET username=%s, email=%s, address=%s, greeting=%s, icon=%s WHERE uid=%s;"
+            cur.execute(sql, (username, email, address, greeting, icon, uid))
             conn.commit()
         except Exception as e:
             print(str(e) + 'が発生しました')

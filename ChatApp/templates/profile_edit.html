@@ -84,10 +84,31 @@
                         <label for="greeting" class="text-start">あいさつ文</label>
                         <textarea id="greeting" name="greeting" class="nes-textarea" rows="4" required>{{ user.greeting }}</textarea>
                     </div>
+                    <div class="nes-field">
+                        <label for="icon" class="text-start">アイコン画像</label>
+                        <div class="nes-select">
+                            <select required name="icon" id="icon">
+                                <option value="" disabled selected hidden>アイコンを選択</option>
+                                {% for icon in icons %}
+                                    <option value="{{ icon }}" {% if user.icon == icon %}selected{% endif %}>{{ icon }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="icon-preview mt-2">
+                            <img id="icon-preview-img" src="{{ url_for('static', filename='img/icon/' + user.icon) }}" alt="アイコンプレビュー" class="nes-avatar is-large"/>
+                        </div>
+                    </div>
                     <a class="nes-btn" href="{{ url_for('profile') }}">戻る</a>
                     <button type="submit" class="nes-btn is-primary">変更</button>
                 </form>
             </div>
         </div>
     </div>
-{% endblock %} 
+    <script>
+        document.getElementById('icon').addEventListener('change', function() {
+            const icon = this.value;
+            const imgPath = "{{ url_for('static', filename='img/icon/') }}" + icon;
+            document.getElementById('icon-preview-img').src = imgPath;
+        });
+    </script>
+{% endblock %}

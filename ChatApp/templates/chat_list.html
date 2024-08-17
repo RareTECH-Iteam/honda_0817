@@ -17,13 +17,10 @@
             <div class="row justify-content-center d-flex align-items-center mb-3 position-relative">
                 <a href="{{ url_for('chat', room_id=room['id']) }}" class="stretched-link"></a>
                 <div class="col-2">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="80" height="80" class="rounded-circle">
+                    <img src="{{ room['icon'] }}" alt="User Icon" width="32" height="32" class="rounded-circle">
                 </div>
                 <div class="col-2">
-                    <p class="text-start mb-0">{{ room['name'] }}</p>
-                </div>
-                <div class="col-4">
-                    <p class="text-start mb-0">日本橋周辺でゆっくりできるカフェを知りたいです。</p>
+                    <p class="mb-0">{{ room['name'] }}のチャットルーム</p>
                 </div>
             </div>
             {% endfor %}
@@ -31,4 +28,4 @@
             <li>チャットルームがありません。</li>
         {% endif %}
     </div>
-{% endblock %} 
+{% endblock %}
